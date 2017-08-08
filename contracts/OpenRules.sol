@@ -1,6 +1,6 @@
 pragma solidity 0.4.15;
 
-import "Rules.sol";
+import "IRules.sol";
 
 contract OpenRules is Rules {
     function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
