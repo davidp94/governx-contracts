@@ -3,7 +3,6 @@ pragma solidity 0.4.15;
 import "Owned.sol";
 
 contract MembershipRegistry is Owned {
-    string public constant version = "MemberRegistry.0.0.1";
     uint256 public numMembers;
     uint256 public numActiveMembers;
     mapping(uint256 => address) public members;
