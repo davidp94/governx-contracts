@@ -1,6 +1,6 @@
 pragma solidity ^0.4.13;
 
-import "Token.sol";
+import "IToken.sol";
 
 contract Controller {
     function onTransfer(address _from, address _to, uint256 _value) public constant returns (bool);
@@ -12,7 +12,7 @@ contract TokenFactory {
     function createCloneToken(address,  uint256, string, uint8, string, bool) returns (address);
 }
 
-contract MiniMeToken is Token {
+contract MiniMeToken is IToken {
 
     modifier canApprove(address _spender, uint256 _value) {
       if (isContract(controller)) {
