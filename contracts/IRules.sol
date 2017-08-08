@@ -1,6 +1,6 @@
 pragma solidity 0.4.15;
 
-contract Rules {
+contract IRules {
     function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool);
     function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool);
     function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool);
