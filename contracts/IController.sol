@@ -17,12 +17,11 @@ contract IController {
     
     function numProposals() public constant returns (uint256 numProposals);
     function nonces(address _sender) public constant returns (uint256);
-    function Controller(address _rules) public;
-    function changeRules(address _rules) public;
+    function changeRules(address _rules) public payable;
     function forward(address _destination, uint _value, bytes _data) public;
-    function newProposal(string _metadata, bytes32[] _data) public returns (uint proposalID);
-    function vote(uint256 _proposalID, bytes32[] _data) public;
-    function execute(uint256 _proposalID) public;
+    function newProposal(string _metadata, bytes32[] _data) public payable returns (uint proposalID);
+    function vote(uint256 _proposalID, bytes32[] _data) public payable;
+    function execute(uint256 _proposalID) public payable;
     function calldata(uint256 _proposalID, uint256 _start, uint256 _length) public constant returns (bytes);
 
     event ProposalMoment(address _sender, uint256 _momentID, uint256 _proposalID);
