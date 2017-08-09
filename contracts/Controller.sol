@@ -63,14 +63,38 @@ contract Proposable {
     mapping(uint256 => Proposal) public proposals;
 }
 
-contract Controller is Proposable, Proxy {
-    modifier onlySelf { if (msg.sender == address(this)) _; }
-    modifier canPropose { _; if (!rules.canPropose(msg.sender, msg.value, numProposals - 1)) throw; }
-    modifier canVote (uint256 _proposalID) { _; if(!rules.canVote(msg.sender, msg.value, _proposalID)) throw; }
-    modifier canExecute (uint256 _proposalID) { if (rules.canExecute(msg.sender, msg.value, _proposalID)) _; }
+contract DefaultRules is IRules {
+    function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
+        return false;
+    }
 
-    function Controller(address _rules) public { rules = Rules(_rules); }
-    function changeRules(address _rules) public onlySelf payable { rules = Rules(_rules); }
+    function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+        return false;
+    }
+
+    function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+        return false;
+    }
+ 
+    function votingWeightOf(address _sender, uint256 _value, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
+        return 1;
+    }
+   
+    function voteOffset(address _sender, uint256 _value, uint256 _proposalID) public constant returns (uint256)  {
+        return 0;
+    }
+   
+    function executionOffset(address _sender, uint256 _value, uint256 _proposalID) public constant returns (uint256) {
+        return 0;
+    }
+}
+
+contract Controller is Proposable, Proxy, DefaultRules {
+    modifier onlySelf { if (msg.sender == address(this)) _; }
+    modifier canPropose { _; if (!canPropose(msg.sender, msg.value, numProposals - 1)) throw; }
+    modifier canVote (uint256 _proposalID) { _; if(!canVote(msg.sender, msg.value, _proposalID)) throw; }
+    modifier canExecute (uint256 _proposalID) { if (canExecute(msg.sender, msg.value, _proposalID)) _; }
+
     function () public payable { Received(msg.sender, msg.value); }
 
     function forward(address _destination, uint _value, bytes _data) public onlySelf {
@@ -86,7 +110,7 @@ contract Controller is Proposable, Proxy {
 
     function vote(uint256 _proposalID, bytes32[] _data) public hasMoment(_proposalID) canVote(_proposalID) payable {
         proposals[_proposalID].votes[proposals[_proposalID].moments.length] = _data;
-        for(uint256 i = rules.voteOffset(msg.sender, msg.value, _proposalID); i < _data.length; i++)
+        for(uint256 i = voteOffset(msg.sender, msg.value, _proposalID); i < _data.length; i++)
             proposals[_proposalID].weights[i] += rules.votingWeightOf(msg.sender, msg.value, _proposalID, i, uint256(_data[i]));
     }
 
@@ -94,7 +118,7 @@ contract Controller is Proposable, Proxy {
         if (proposals[_proposalID].executed) throw;
         bytes32[] storage data = proposals[_proposalID].data;
         proposals[_proposalID].executed = true;
-        for(uint256 c = rules.executionOffset(msg.sender, msg.value, _proposalID); c < data.length; c += uint256(data[c + 3]) + 4)
+        for(uint256 c = executionOffset(msg.sender, msg.value, _proposalID); c < data.length; c += uint256(data[c + 3]) + 4)
             Proxy(address(data[c])).forward(address(data[c + 1]), uint256(data[c + 2]), calldata(_proposalID, c + 4, uint256(data[c + 3])));
     }
 
@@ -111,6 +135,4 @@ contract Controller is Proposable, Proxy {
         }
         return memoryBytes;
     }
-
-    Rules public rules;
 }
