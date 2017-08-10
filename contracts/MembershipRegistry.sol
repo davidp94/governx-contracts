@@ -1,21 +1,22 @@
 pragma solidity 0.4.15;
 
-import "Owned.sol";
 
-contract MembershipRegistry is Owned {
+contract MembershipRegistry {
+    modifier onlySelf { if (msg.sender != address(this)) throw; }
+
     uint256 public numMembers;
     uint256 public numActiveMembers;
     mapping(uint256 => address) public members;
     mapping(address => uint256) public ids;
     
-    function add(address _member) public onlyOwner {
+    function add(address _member) public onlySelf {
         if (isMember(_member)) throw;
         ids[_member] = numMembers++;
         members[ids[_member]] = _member;
         numActiveMembers++;
     }
     
-    function remove(address _member) public onlyOwner {
+    function remove(address _member) public onlySelf {
         if (!isMember(_member)) throw;
         members[ids[_member]] = address(0);
         ids[_member] = 0;
