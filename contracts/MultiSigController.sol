@@ -4,7 +4,7 @@ import "Controller.sol";
 import "MembershipRegistry.sol";
 import "ControllerUtils.sol";
 
-contract MultiSigController is Controller, MembershipRegistry, ControllerUtils {
+contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
     uint256 public required;
     uint256 public dailyLimit;
     string public constant name = "MultiSigController";
