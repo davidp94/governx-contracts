@@ -65,11 +65,11 @@ contract CuratedLiquidDemocracyController is Controller {
     return (weightOf(_proposalID, 1) > minimumQuorum()) && !hasVoted(_proposalID, _curator);
   }
   
-  // delegation happens during the vote period
+  // delegation happens once and during the vote period
   function delegate(address _to, uint256 _proposalID) public {
     if (hasVoted(_proposalID, msg.sender) && !delegated[msg.sender][_proposalID]) throw;
     delegated[msg.sender][_proposalID] = true;
-    delegationWeight[_to][_proposalID] += balanceOfAtTime(_sender, voteTime(_proposalID));
+    delegationWeight[_to][_proposalID] += balanceOfAtTime(msg.sender, voteTime(_proposalID)) + delegationWeight[msg.sender][_proposalID];
   }
 
   uint256 public majority;
