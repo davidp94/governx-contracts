@@ -22,7 +22,6 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
 
       required = _required;
       dailyLimit = _dailyLimit;
-      owner = msg.sender;
     }
 
     function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
