@@ -73,7 +73,6 @@ contract CuratedLiquidDemocracyController is Controller {
     delegationWeight[_to][_proposalID] += balanceOfAtTime(_sender, voteTime(_proposalID));
   }
 
-  uint256 public bondRequirement;
   uint256 public majority;
   uint256 public baseQourum;
   uint256 public qourum;
