@@ -3,8 +3,8 @@ pragma solidity 0.4.15;
 import "Controller.sol";
 import "IMiniMeToken.sol";
 
-contract CuratedLiquidDemocracyController is Controller {
-  function CuratedLiquidDemocracyController(address _token,
+contract LiquidDemocracyController is Controller {
+  function LiquidDemocracyController(address _token,
     address _curator,
     uint256 _baseQuorum,
     uint256 _quorum,
