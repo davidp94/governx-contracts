@@ -41,7 +41,7 @@ contract CuratedLiquidDemocracyController is Controller {
   }
 
   function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
-    return balanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID];
+    return balanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID] || _sender == curator;
   }
 
   function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
@@ -82,6 +82,7 @@ contract CuratedLiquidDemocracyController is Controller {
   
   mapping(address => mapping(uint256 => bool)) public delegated;
   mapping(address => mapping(uint256 => uint256)) public delegationWeight;
+  mapping(uint256 => bool) public notAllowed;
   
   address public curator;
   IMiniMeToken public token;
