@@ -3,14 +3,14 @@ pragma solidity ^0.4.15;
 import "Controller.sol";
 import "MembershipRegistry.sol";
 
-contract AuthorityRules is Controller, MembershipRegistry {
+contract AuthorityController is Controller, MembershipRegistry {
   modifier onlyAuthority() {
     if (msg.sender != authority) { throw; }
 
     _;
   }
 
-  function AuthorityRules(address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
+  function AuthorityController(address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
     for (uint m = 0; m < _members.length; m++) {
       addMember(_members[m]);
     }
