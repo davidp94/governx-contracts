@@ -21,7 +21,14 @@ contract MembershipRegistry is Owned {
         ids[_member] = 0;
         numActiveMembers--;
     }
-    
+
+    function transferAddress(address _addr) public {
+        if (!isMember(msg.sender)) throw;
+        members[ids[msg.sender]] == _addr;
+        ids[_addr] = ids[msg.sender];
+        ids[msg.sender] = 0;
+    }
+
     function isMember(address _member) public constant returns (bool) {
         return (members[ids[_member]] == _member && _member != address(0));
     }
