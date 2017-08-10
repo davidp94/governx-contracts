@@ -6,34 +6,34 @@ import "IMiniMeToken.sol";
 contract CuratedLiquidDemocracyController is Controller {
   function CuratedLiquidDemocracyController(address _token,
     address _curator,
-    uint256 _baseQourum,
-    uint256 _qourum,
+    uint256 _baseQuorum,
+    uint256 _quorum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
     uint256 _executionPeriod) {
     token = IMiniMeToken(_token);
     curator = _curator;
-    changeRules(_baseQourum, _qourum, _debatePeriod, _votingPeriod, _gracePeriod, _executionPeriod);
-  }
-
-  function minimumQuorum() public constant returns (uint256) {
-    return token.totalSupply() / baseQourum;
+    changeRules(_baseQuorum, _quorum, _debatePeriod, _votingPeriod, _gracePeriod, _executionPeriod);
   }
 
   function changeRules(
-    uint256 _baseQourum,
-    uint256 _qourum,
+    uint256 _baseQuorum,
+    uint256 _quorum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
     uint256 _executionPeriod) public onlySelf {
-    baseQourum = _baseQourum;
-    qourum = _qourum;
+    baseQuorum = _baseQuorum;
+    quorum = _quorum;
     debatePeriod = _debatePeriod;
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
     executionPeriod = _executionPeriod;
+  }
+
+  function minimumQuorum() public constant returns (uint256) {
+    return token.totalSupply() / baseQuorum;
   }
 
   function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
@@ -74,7 +74,7 @@ contract CuratedLiquidDemocracyController is Controller {
 
   uint256 public majority;
   uint256 public baseQourum;
-  uint256 public qourum;
+  uint256 public quorum;
   uint256 public debatePeriod;
   uint256 public votingPeriod;
   uint256 public gracePeriod;
