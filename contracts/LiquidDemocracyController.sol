@@ -41,7 +41,7 @@ contract LiquidDemocracyController is Controller {
   }
 
   function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
-    return balanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID] || _sender == curator;
+    return (balanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID]) || _sender == curator;
   }
 
   function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
