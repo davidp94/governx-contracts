@@ -10,10 +10,11 @@ contract CuratedLiquidDemocracyController is Controller {
     uint256 _qourum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
+    uint256 _gracePeriod,
     uint256 _executionPeriod) {
     token = IMiniMeToken(_token);
     curator = _curator;
-    changeRules(_baseQourum, _qourum, _debatePeriod, _votingPeriod, _executionPeriod);
+    changeRules(_baseQourum, _qourum, _debatePeriod, _votingPeriod, _gracePeriod, _executionPeriod);
   }
 
   function minimumQuorum() public constant returns (uint256) {
@@ -26,11 +27,13 @@ contract CuratedLiquidDemocracyController is Controller {
     uint256 _qourum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
+    uint256 _gracePeriod,
     uint256 _executionPeriod) public onlySelf {
     baseQourum = _baseQourum;
     qourum = _qourum;
     debatePeriod = _debatePeriod;
     votingPeriod = _votingPeriod;
+    gracePeriod = _gracePeriod;
     executionPeriod = _executionPeriod;
   }
 
@@ -44,8 +47,8 @@ contract CuratedLiquidDemocracyController is Controller {
 
   function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
     return hasWon(_sender, _value, _proposalID)
-      && (block.timestamp < (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + executionPeriod))
-      && (block.timestamp > (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod)));
+      && (block.timestamp < (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod + executionPeriod))
+      && (block.timestamp > (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod)));
   }
   
   function voteTime(uint256 _proposalID) public constant returns (uint256) {
@@ -69,6 +72,7 @@ contract CuratedLiquidDemocracyController is Controller {
   uint256 public qourum;
   uint256 public debatePeriod;
   uint256 public votingPeriod;
+  uint256 public gracePeriod;
   uint256 public executionPeriod;
   
   address public curator;
