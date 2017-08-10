@@ -18,7 +18,6 @@ contract CuratedLiquidDemocracyController is Controller {
   }
 
   function minimumQuorum() public constant returns (uint256) {
-    // minimum of 12% and maximum of 24%
     return token.totalSupply() / baseQourum;
   }
 
