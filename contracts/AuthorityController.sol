@@ -18,7 +18,6 @@ contract AuthorityController is Controller, MembershipRegistry {
     authority = _authority;
     required = _required;
     minimumQuorum = _minimumQuorum;
-    owner = msg.sender;
   }
 
   function changeVariables(uint256 _required, uint256 _minimumQuorum) onlySelf {
