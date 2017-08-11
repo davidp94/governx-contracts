@@ -25,19 +25,19 @@ contract AuthorityController is Controller, MembershipRegistry {
     minimumQuorum = _minimumQuorum;
   }
 
-  function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
+  function canPropose(address _sender, uint256 _proposalID) public constant returns (bool) {
       return isMember(_sender);
   }
 
-  function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+  function canVote(address _sender, uint256 _proposalID) public constant returns (bool)  {
       return isMember(_sender);
   }
 
-  function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+  function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
       return isMember(_sender) && hasWon(_sender, _value, _proposalID);
   }
 
-  function votingWeightOf(address _sender, uint256 _value, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
+  function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
     if (isMember(_sender))
       return 1;
   }
