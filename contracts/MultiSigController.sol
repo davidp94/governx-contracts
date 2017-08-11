@@ -24,19 +24,19 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
       dailyLimit = _dailyLimit;
     }
 
-    function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
+    function canPropose(address _sender, uint256 _proposalID) public constant returns (bool) {
         return isMember(_sender);
     }
 
-    function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+    function canVote(address _sender, uint256 _proposalID) public constant returns (bool)  {
         return isMember(_sender);
     }
 
-    function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+    function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
         return isMember(_sender) && hasWon(_sender, _value, _proposalID);
     }
  
-    function votingWeightOf(address _sender, uint256 _value, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
+    function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
         return uint256(isMember(_sender));
     }
  
@@ -57,7 +57,7 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
 
     // is the tx sending to the rules or board contracts
     function isSafeDestination(address _destination) public constant returns (bool) {
-      return (_destination != address(this) && _destination != address(board));
+      return (_destination != address(this));
     }
 
     // return the value widthrawn within the last 24 hours
