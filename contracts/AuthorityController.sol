@@ -4,11 +4,7 @@ import "Controller.sol";
 import "MembershipRegistry.sol";
 
 contract AuthorityController is Controller, MembershipRegistry {
-  modifier onlyAuthority() {
-    if (msg.sender != authority) { throw; }
-
-    _;
-  }
+  modifier onlyAuthority() { if (msg.sender == authority) _; }
 
   function AuthorityController(address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
     for (uint m = 0; m < _members.length; m++) {
@@ -43,7 +39,7 @@ contract AuthorityController is Controller, MembershipRegistry {
   }
 
   // only authority can submit the votes
-  function submitTally(uint256 _proposalID, uint256 _yesVotes, uint256 _totalVotes) onlyAuthority {
+  function submitTally(uint256 _proposalID, uint256 _yesVotes, uint256 _totalVotes) public onlyAuthority {
     if (yesVotes[_proposalID] == 0 && _yesVotes != 0 && voteSubmitted[_proposalID] == false) {
       voteSubmitted[_proposalID] = true;
       yesVotes[_proposalID] = _yesVotes;
