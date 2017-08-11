@@ -12,7 +12,7 @@ contract Owned {
 
     function Owned() { owner = msg.sender; }
 
-    function isOwner(address addr) public returns(bool) { return addr == owner; }
+    function isOwner(address addr) public constant returns(bool) { return addr == owner; }
 
     function transfer(address _owner) onlyOwner {
         if (_owner != address(this)) {
