@@ -1,4 +1,5 @@
 // to be used with ElectedBoardController
+// multi-class shareholder board
 
 pragma solidity 0.4.15;
 
