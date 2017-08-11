@@ -1,3 +1,5 @@
+// to be used with ElectedBoardController
+
 pragma solidity 0.4.15;
 
 import "IProxy.sol";
