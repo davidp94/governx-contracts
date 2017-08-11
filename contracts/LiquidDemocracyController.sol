@@ -23,7 +23,7 @@ contract LiquidDemocracyController is Controller {
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
-    uint256 _executionPeriod) public onlySelf {
+    uint256 _executionPeriod) public onlyProxy {
     baseQuorum = _baseQuorum;
     quorum = _quorum;
     debatePeriod = _debatePeriod;
