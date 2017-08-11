@@ -36,15 +36,15 @@ contract LiquidDemocracyController is Controller {
     return token.totalSupply() / baseQuorum;
   }
 
-  function canPropose(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
+  function canPropose(address _sender, uint256 _proposalID) public constant returns (bool) {
     return balanceOf(_sender) > 0;
   }
 
-  function canVote(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+  function canVote(address _sender, uint256 _proposalID) public constant returns (bool)  {
     return (balanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID]) || _sender == curator;
   }
 
-  function canExecute(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool)  {
+  function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
     return hasWon(_sender, _value, _proposalID)
       && (block.timestamp < (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod + executionPeriod))
       && (block.timestamp > (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod)));
@@ -54,7 +54,7 @@ contract LiquidDemocracyController is Controller {
     return momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod;
   }
 
-  function votingWeightOf(address _sender, uint256 _value, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
+  function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
     uint256 balanceAtVoteTime = balanceOfAtTime(_sender, voteTime(_proposalID));
     
     if(balanceAtVoteTime > 0 && !hasVoted(_proposalID, _sender) && !delegated[_sender][_proposalID])
