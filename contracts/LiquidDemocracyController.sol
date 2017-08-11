@@ -14,7 +14,12 @@ contract LiquidDemocracyController is Controller {
     uint256 _executionPeriod) {
     token = IMiniMeToken(_token);
     curator = _curator;
-    changeRules(_baseQuorum, _quorum, _debatePeriod, _votingPeriod, _gracePeriod, _executionPeriod);
+    baseQuorum = _baseQuorum;
+    quorum = _quorum;
+    debatePeriod = _debatePeriod;
+    votingPeriod = _votingPeriod;
+    gracePeriod = _gracePeriod;
+    executionPeriod = _executionPeriod;
   }
 
   function changeRules(
