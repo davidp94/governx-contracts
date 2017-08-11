@@ -1,5 +1,5 @@
 // to be used with ElectedBoardController
-// multi-class shareholder board
+// liquid democracy multi-class shareholder board with elections for board members
 
 pragma solidity 0.4.15;
 
