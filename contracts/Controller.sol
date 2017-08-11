@@ -1,14 +1,9 @@
 pragma solidity 0.4.15;
 
-import "IProxy.sol";
 import "Proposable.sol";
 import "DefaultRules.sol";
+import "ProxyBased.sol";
 
-contract ProxyBased {
-    modifier onlyProxy { if (msg.sender == address(proxy)) _; }
-
-    IProxy public proxy;
-}
 
 contract Controller is ProxyBased, Proposable, DefaultRules {
     modifier canPropose { _; if (!canPropose(msg.sender, numProposals - 1)) throw; }
