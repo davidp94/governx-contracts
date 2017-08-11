@@ -17,6 +17,7 @@ contract ShareHolderController is Controller, ControllerUtils {
     address _electedBoard,
     address _proxy,
     uint256 _baseQuorum,
+    uint256 _electionBaseQuorum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
@@ -30,17 +31,16 @@ contract ShareHolderController is Controller, ControllerUtils {
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
     executionPeriod = _executionPeriod;
+    electionBaseQuorum = _electionBaseQuorum;
   }
  
   function changeElection(
     uint256 _electionDate,
     uint256 _electionDuration,
-    uint256 _electionOffset,
-    uint256 _electionBaseQuorum) public onlyProxy {
+    uint256 _electionOffset) public onlyProxy {
     electionDate = _electionDate;
     electionDuration = _electionDuration;
     electionOffset = _electionOffset;
-    electionBaseQuorum = _electionBaseQuorum;
   }
 
   function changeVariables(address[] _tokens,
@@ -48,6 +48,7 @@ contract ShareHolderController is Controller, ControllerUtils {
     address _electedBoard,
     address _proxy,
     uint256 _baseQuorum,
+    uint256 _electionBaseQuorum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
@@ -61,6 +62,7 @@ contract ShareHolderController is Controller, ControllerUtils {
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
     executionPeriod = _executionPeriod;
+    electionBaseQuorum = _electionBaseQuorum;
   }
   
   function shareHolderBalanceOfAtTime(address _sender, uint256 _time) public constant returns (uint256 balance) {
