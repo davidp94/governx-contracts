@@ -117,9 +117,9 @@ contract ShareHolderController is Controller, ControllerUtils {
     bytes4 electSig = bytes4(sha3("add(address)"));
     bytes4 unelectSig = bytes4(sha3("remove(address)"));
   
-    for(uint256 c = executionOffset(msg.sender, 0, i);
+    for(uint256 c = executionOffset(msg.sender, i);
           c < numDataOf(i);
-          c += dataLengthOf(i, c) + 4) {
+          c += dataLengthOf(i, c) + 3) {
       bytes4 dataSig = signatureOf(_proposalID, c);
       address dest = destinationOf(_proposalID, c);
           
