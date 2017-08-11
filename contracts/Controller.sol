@@ -1,41 +1,45 @@
 pragma solidity 0.4.15;
 
-import "IRules.sol";
 import "IProxy.sol";
 import "Proposable.sol";
 import "DefaultRules.sol";
 
-contract Controller is Proposable, Proxy, DefaultRules {
-    modifier onlySelf { if (msg.sender == address(this)) _; }
+contract ProxyBased {
+    modifier onlyProxy { if (msg.sender == address(proxy) || address(proxy) == address(0)) _; }
+    
+    function transferProxy(address _proxy) public onlyProxy {
+        proxy = IProxy(_proxy);
+    }
+
+    IProxy public proxy;
+}
+
+contract Controller is ProxyBased, Proposable, DefaultRules {
     modifier canPropose { _; if (!canPropose(msg.sender, numProposals - 1)) throw; }
     modifier canVote (uint256 _proposalID) { _; if(!canVote(msg.sender, _proposalID)) throw; }
     modifier canExecute (uint256 _proposalID) { if (canExecute(msg.sender, _proposalID)) _; }
+    modifier transferFunds { if (msg.value > 0) { if (!proxy.send(msg.value)) throw; } _; }
 
-    function () public payable { Received(msg.sender, msg.value); }
+    function () public payable transferFunds { Received(msg.sender, msg.value); }
 
-    function forward(address _destination, uint _value, bytes _data) public onlySelf {
-        if (!_destination.call.value(_value)(_data)) throw;
-        Forwarded(_destination, _value, _data);
-    }
-
-    function newProposal(string _metadata, bytes32[] _data) public hasMoment(numProposals) canPropose payable returns (uint proposalID) {
+    function newProposal(string _metadata, bytes32[] _data) public payable transferFunds hasMoment(numProposals) canPropose returns (uint proposalID) {
         proposalID = numProposals++;
         proposals[proposalID].metadata = _metadata;
         proposals[proposalID].data = _data;
     }
 
-    function vote(uint256 _proposalID, bytes32[] _data) public hasMoment(_proposalID) canVote(_proposalID) payable {
+    function vote(uint256 _proposalID, bytes32[] _data) public payable transferFunds hasMoment(_proposalID) canVote(_proposalID) {
         proposals[_proposalID].votes[proposals[_proposalID].moments.length] = _data;
         for(uint256 i = voteOffset(msg.sender, _proposalID); i < _data.length; i++)
             proposals[_proposalID].weights[i] += rules.votingWeightOf(msg.sender, msg.value, _proposalID, i, uint256(_data[i]));
     }
 
-    function execute(uint256 _proposalID) public hasMoment(_proposalID) canExecute(_proposalID) payable {
+    function execute(uint256 _proposalID) public payable transferFunds hasMoment(_proposalID) canExecute(_proposalID) {
         if (proposals[_proposalID].executed) throw;
         bytes32[] storage data = proposals[_proposalID].data;
         proposals[_proposalID].executed = true;
-        for(uint256 c = executionOffset(msg.sender, _proposalID); c < data.length; c += uint256(data[c + 3]) + 4)
-            Proxy(address(data[c])).forward(address(data[c + 1]), uint256(data[c + 2]), calldata(_proposalID, c + 4, uint256(data[c + 3])));
+        for(uint256 c = executionOffset(msg.sender, _proposalID); c < data.length; c += uint256(data[c + 2]) + 3)
+            proxy.forward(address(data[c]), uint256(data[c + 1]), calldata(_proposalID, c + 3, uint256(data[c + 2])));
     }
 
     function calldata(uint256 _proposalID, uint256 _start, uint256 _length) public constant returns (bytes) {
@@ -51,4 +55,6 @@ contract Controller is Proposable, Proxy, DefaultRules {
         }
         return memoryBytes;
     }
+    
+    event Received(address _sender, uint256 _value);
 }
