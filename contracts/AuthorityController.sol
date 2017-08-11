@@ -34,7 +34,7 @@ contract AuthorityController is Controller, MembershipRegistry {
   }
 
   function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
-      return isMember(_sender) && hasWon(_sender, _value, _proposalID);
+      return isMember(_sender) && hasWon(_sender, _proposalID);
   }
 
   function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
@@ -52,7 +52,7 @@ contract AuthorityController is Controller, MembershipRegistry {
   }
 
   // extra methods for UI
-  function hasWon(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
+  function hasWon(address _sender, uint256 _proposalID) public constant returns (bool) {
     uint256 quorum = totalVotes[_proposalID];
     uint256 totalYesVotes = yesVotes[_proposalID];
 
