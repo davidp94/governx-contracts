@@ -5,11 +5,7 @@ import "Proposable.sol";
 import "DefaultRules.sol";
 
 contract ProxyBased {
-    modifier onlyProxy { if (msg.sender == address(proxy) || address(proxy) == address(0)) _; }
-    
-    function transferProxy(address _proxy) public onlyProxy {
-        proxy = IProxy(_proxy);
-    }
+    modifier onlyProxy { if (msg.sender == address(proxy)) _; }
 
     IProxy public proxy;
 }
@@ -19,8 +15,6 @@ contract Controller is ProxyBased, Proposable, DefaultRules {
     modifier canVote (uint256 _proposalID) { _; if(!canVote(msg.sender, _proposalID)) throw; }
     modifier canExecute (uint256 _proposalID) { if (canExecute(msg.sender, _proposalID)) _; }
     modifier transferFunds { if (msg.value > 0) { if (!proxy.send(msg.value)) throw; } _; }
-
-    function () public payable transferFunds { Received(msg.sender, msg.value); }
 
     function newProposal(string _metadata, bytes32[] _data) public payable transferFunds hasMoment(numProposals) canPropose returns (uint proposalID) {
         proposalID = numProposals++;
