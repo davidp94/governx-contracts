@@ -7,7 +7,7 @@ contract ElectedBoardController is MultiSigController, ControllerUtils {
   string public constant name = "ElectedBoardController";
   string public constant version = "1.0";
 
-  modifier onlyElectorate { if (msg.sender != _electorate) throw; }
+  modifier onlyElectorate { if (msg.sender == _electorate) _; }
 
   function ElectedBoardController(address[] _members, uint256 _required, uint256 _dailyLimit, address _electorate) {
     for (uint256 m = 0; m < _members.length; m++) {
