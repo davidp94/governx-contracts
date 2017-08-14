@@ -10,16 +10,17 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
     string public constant name = "MultiSigController";
     string public constant version = "1.0";
 
-    function changeVariables(uint256 _required, uint256 _dailyLimit) onlyProxy {
-      required = _required;
-      dailyLimit = _dailyLimit;
-    }
-
-    function MultiSigController(address[] _members, uint256 _required, uint256 _dailyLimit) {
+    function MultiSigController(address _proxy, address[] _members, uint256 _required, uint256 _dailyLimit) {
       for (uint256 m = 0; m < _members.length; m++) {
         addMember(_members[m]);
       }
 
+      required = _required;
+      dailyLimit = _dailyLimit;
+      setProxy(_proxy);
+    }
+    
+    function changeVariables(uint256 _required, uint256 _dailyLimit) onlyProxy {
       required = _required;
       dailyLimit = _dailyLimit;
     }
