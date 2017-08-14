@@ -3,24 +3,20 @@ pragma solidity 0.4.15;
 import "IController.sol";
 
 contract ControllerUtils {
-    function proxyOf(uint256 _proposalID, uint256 _c) constant returns (address) {
-        return address(IController(this).dataOf(_proposalID, _c));
-    }
-
     function destinationOf(uint256 _proposalID, uint256 _c) constant returns (address) {
-        return address(IController(this).dataOf(_proposalID, _c + 1));
+        return address(IController(this).dataOf(_proposalID, _c));
     }
     
     function valueOf(uint256 _proposalID, uint256 _c) constant returns (uint256) {
-        return uint256(IController(this).dataOf(_proposalID, _c + 2));
+        return uint256(IController(this).dataOf(_proposalID, _c + 1));
     }
     
     function dataLengthOf(uint256 _proposalID, uint256 _c) constant returns (uint256) {
-        return uint256(IController(this).dataOf(_proposalID, _c + 3));
+        return uint256(IController(this).dataOf(_proposalID, _c + 2));
     }
     
     function signatureOf(uint256 _proposalID, uint256 _c) constant returns (bytes4) {
-        return bytes4(IController(this).dataOf(_proposalID, _c + 4));
+        return bytes4(IController(this).dataOf(_proposalID, _c + 3));
     }
     
     function latestSenderOf(uint256 _proposalID) constant returns (address) {
