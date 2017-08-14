@@ -1,8 +1,8 @@
 pragma solidity 0.4.15;
 
-import "Controller.sol";
-import "MembershipRegistry.sol";
-import "ControllerUtils.sol";
+import "lib/Controller.sol";
+import "lib/MembershipRegistry.sol";
+import "lib/ControllerUtils.sol";
 
 contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
     uint256 public required;
@@ -19,7 +19,7 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
       dailyLimit = _dailyLimit;
       setProxy(_proxy);
     }
-    
+
     function changeVariables(uint256 _required, uint256 _dailyLimit) onlyProxy {
       required = _required;
       dailyLimit = _dailyLimit;
@@ -36,11 +36,11 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
     function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
         return isMember(_sender) && hasWon(_sender, _value, _proposalID);
     }
- 
+
     function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
         return uint256(isMember(_sender));
     }
- 
+
     // extra methods for UI
     function hasWon(address _sender, uint256 _value, uint256 _proposalID) public constant returns (bool) {
       for(uint256 c = executionOffset(msg.sender, 0, i);

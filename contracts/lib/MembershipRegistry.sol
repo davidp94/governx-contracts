@@ -1,6 +1,6 @@
 pragma solidity 0.4.15;
 
-import "ProxyBased.sol";
+import "lib/ProxyBased.sol";
 
 
 contract MembershipRegistry is ProxyBased {
@@ -8,14 +8,14 @@ contract MembershipRegistry is ProxyBased {
     uint256 public numActiveMembers;
     mapping(uint256 => address) public members;
     mapping(address => uint256) public ids;
-    
+
     function add(address _member) public onlyProxy {
         if (isMember(_member)) throw;
         ids[_member] = numMembers++;
         members[ids[_member]] = _member;
         numActiveMembers++;
     }
-    
+
     function remove(address _member) public onlyProxy {
         if (!isMember(_member)) throw;
         members[ids[_member]] = address(0);

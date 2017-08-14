@@ -1,6 +1,6 @@
 pragma solidity ^0.4.13;
 
-import "IToken.sol";
+import "lib/IToken.sol";
 
 contract Controller {
     function onTransfer(address _from, address _to, uint256 _value) public constant returns (bool);
@@ -160,7 +160,7 @@ contract MiniMeToken is IToken {
     function genesisTransfer(address _owner, uint256 _recordType) internal constant returns (uint256) {
       return balanceAtData[_owner][_recordType][balanceAtRecords[_owner][_recordType]];
     }
-    
+
     function balanceOfAtType(address _owner, uint256 _blockNumber, uint256 _recordType) public constant returns (uint256) {
       if (address(parent) != address(0) && (!hasTransfers(_owner) || genesisTransfer(_owner, _recordType) > _blockNumber))
         return parent.balanceOfAtType(_owner, snapShotBlock, _recordType);
@@ -187,12 +187,12 @@ contract MiniMeToken is IToken {
     function totalSupplyAtTime(uint256 _time) public constant returns (uint256) {
       return balanceOfAtTime(address(this), _time) - balanceOfAtTime(address(0), _time);
     }
-    
+
     function isContract(address _addr) constant internal returns(bool ret) {
         if (_addr == 0) return false;
         assembly { ret := gt(extcodesize(_addr), 0) }
     }
-    
+
     function enableTransfers(bool _transfersEnabled) onlyController {
         transfersEnabled = _transfersEnabled;
     }

@@ -3,19 +3,19 @@
 
 pragma solidity 0.4.15;
 
-import "IProxy.sol";
-import "Controller.sol";
-import "ControllerUtils.sol";
+import "lib/IProxy.sol";
+import "lib/Controller.sol";
+import "lib/ControllerUtils.sol";
 
 contract ShareHolderController is Controller, ControllerUtils {
   string public constant name = "ShareHolderController";
   string public constant version = "1.0";
 
   function ShareHolderController(
+    address _proxy,
     address[] _tokens,
     uint256[] _ratios,
     address _electedBoard,
-    address _proxy,
     uint256 _baseQuorum,
     uint256 _electionBaseQuorum,
     uint256 _debatePeriod,
@@ -25,15 +25,15 @@ contract ShareHolderController is Controller, ControllerUtils {
     tokens = _tokens;
     ratios = _ratios;
     electedBoard = _electedBoard;
-    proxy = IProxy(_proxy);
     baseQuorum = _baseQuorum;
     debatePeriod = _debatePeriod;
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
     executionPeriod = _executionPeriod;
     electionBaseQuorum = _electionBaseQuorum;
+    setProxy(_proxy);
   }
- 
+
   function changeElection(
     uint256 _electionDate,
     uint256 _electionDuration,
@@ -64,12 +64,12 @@ contract ShareHolderController is Controller, ControllerUtils {
     executionPeriod = _executionPeriod;
     electionBaseQuorum = _electionBaseQuorum;
   }
-  
+
   function shareHolderBalanceOfAtTime(address _sender, uint256 _time) public constant returns (uint256 balance) {
     for (uint256 i = 0; i < tokens.length; i++)
       balance += IMiniMeToken(tokens[i]).balanceOf(_sender, _time) / ratios[i];
   }
-  
+
   function totalTokenSupply() public constant returns (uint256 totalSupply) {
     for (uint256 i = 0; i < tokens.length; i++)
       totalSupply += IMiniMeToken(tokens[i]).totalSupply();
@@ -78,7 +78,7 @@ contract ShareHolderController is Controller, ControllerUtils {
   function minimumElectionQuorum() public constant returns (uint256) {
     return totalTokenSupply() / electionBaseQuorum;
   }
-  
+
   function minimumQuorum() public constant returns (uint256) {
     return totalTokenSupply() / baseQuorum;
   }
@@ -96,14 +96,14 @@ contract ShareHolderController is Controller, ControllerUtils {
       && (block.timestamp < (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod + executionPeriod))
       && (block.timestamp > (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod)));
   }
-  
+
   function voteTime(uint256 _proposalID) public constant returns (uint256) {
     return momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod;
   }
 
   function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
     uint256 balanceAtVoteTime = shareHolderBalanceOfAtTime(_sender, voteTime(_proposalID));
-    
+
     if(balanceAtVoteTime > 0 && !hasVoted(_proposalID, _sender) && !delegated[_sender][_proposalID])
       return balanceAtVoteTime + delegationWeight[_sender, _proposalID];
   }
@@ -113,47 +113,47 @@ contract ShareHolderController is Controller, ControllerUtils {
     bool onlyElectionSignatures = true;
     bool onlyElectedBoard = true;
     bool usesElectedBoard = false;
-    
+
     bytes4 electSig = bytes4(sha3("add(address)"));
     bytes4 unelectSig = bytes4(sha3("remove(address)"));
-  
+
     for(uint256 c = executionOffset(msg.sender, i);
           c < numDataOf(i);
           c += dataLengthOf(i, c) + 3) {
       bytes4 dataSig = signatureOf(_proposalID, c);
       address dest = destinationOf(_proposalID, c);
-          
+
       if (dest == electedBoard) usesElectedBoard = true;
       if (!isElection && dest == electedBoard) return false;
       if (dest != electedBoard) onlyElectedBoard = false;
       if (dataSig != electSig && dataSig != unelectSig) onlyElectionSignatures = false;
     }
-    
+
     if (isElection && onlyElectionSignatures && onlyElectedBoard && weightOf(_proposalID, 0) > minimumElectionQuorum()) return true;
     if (!isElection && usesElectedBoard) return false;
-  
+
     return (weightOf(_proposalID, 0) > minimumQuorum() && !usesElectedBoard);
   }
-  
+
   // delegation happens once and during the vote period
   function delegate(address _to, uint256 _proposalID) public {
     if (hasVoted(_proposalID, msg.sender) && !delegated[msg.sender][_proposalID]) throw;
     delegated[msg.sender][_proposalID] = true;
     delegationWeight[_to][_proposalID] += shareHolderBalanceOfAtTime(msg.sender, voteTime(_proposalID)) + delegationWeight[msg.sender][_proposalID];
   }
-  
+
   function resetElectionPeriod() public {
     if (block.timestamp > electionDate + electionDuration)
       electionDate = electionDate + electionDuration + electionOffset;
   }
-  
+
   function isElectionPeriod() public constant returns (bool) {
     return (block.timestamp >= electionDate && block.timestamp <= electionDate + electionDuration);
   }
-  
+
   function isElectionPeriodProposal(uint256 _proposalID) public constant returns (bool) {
     uint256 creationTime = momentTimeOf(_proposalID, 0);
-  
+
     return (creationTime >= electionDate && creationTime <= electionDate + electionDuration);
   }
 
@@ -163,12 +163,12 @@ contract ShareHolderController is Controller, ControllerUtils {
   uint256 public votingPeriod;
   uint256 public gracePeriod;
   uint256 public executionPeriod;
-  
+
   uint256 public electionDate = block.timestamp + (6 months);
   uint256 public electionDuration = 2 weeks;
   uint256 public electionOffset = 6 months;
   uint256 public electionBaseQuorum = 2;
-  
+
   mapping(address => mapping(uint256 => bool)) public delegated;
   mapping(address => mapping(uint256 => uint256)) public delegationWeight;
   mapping(uint256 => bool) public notAllowed;

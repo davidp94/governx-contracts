@@ -1,11 +1,11 @@
 pragma solidity 0.4.15;
 
-import "IProxy.sol";
+import "lib/IProxy.sol";
 
 
 contract ProxyBased {
     modifier onlyProxy { if (msg.sender == address(proxy)) _; }
-    
+
     function setProxy(address _proxy) internal {
         proxy = IProxy(_proxy);
     }

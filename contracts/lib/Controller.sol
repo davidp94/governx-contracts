@@ -1,8 +1,8 @@
 pragma solidity 0.4.15;
 
-import "Proposable.sol";
-import "DefaultRules.sol";
-import "ProxyBased.sol";
+import "lib/Proposable.sol";
+import "lib/DefaultRules.sol";
+import "lib/ProxyBased.sol";
 
 
 contract Controller is ProxyBased, Proposable, DefaultRules {
@@ -44,6 +44,6 @@ contract Controller is ProxyBased, Proposable, DefaultRules {
         }
         return memoryBytes;
     }
-    
+
     event Received(address _sender, uint256 _value);
 }
