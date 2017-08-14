@@ -4,7 +4,8 @@ import "Controller.sol";
 import "IMiniMeToken.sol";
 
 contract LiquidDemocracyController is Controller {
-  function LiquidDemocracyController(address _token,
+  function LiquidDemocracyController(address _proxy,
+    address _token,
     address _curator,
     uint256 _baseQuorum,
     uint256 _quorum,
@@ -20,6 +21,7 @@ contract LiquidDemocracyController is Controller {
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
     executionPeriod = _executionPeriod;
+    setProxy(_proxy);
   }
 
   function changeRules(
