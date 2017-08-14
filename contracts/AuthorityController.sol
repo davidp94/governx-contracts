@@ -6,7 +6,7 @@ import "MembershipRegistry.sol";
 contract AuthorityController is Controller, MembershipRegistry {
   modifier onlyAuthority() { if (msg.sender == authority) _; }
 
-  function AuthorityController(address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
+  function AuthorityController(address _proxy, address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
     for (uint m = 0; m < _members.length; m++) {
       addMember(_members[m]);
     }
@@ -14,6 +14,7 @@ contract AuthorityController is Controller, MembershipRegistry {
     authority = _authority;
     required = _required;
     minimumQuorum = _minimumQuorum;
+    setProxy(_proxy);
   }
 
   function changeVariables(uint256 _required, uint256 _minimumQuorum) onlySelf {
