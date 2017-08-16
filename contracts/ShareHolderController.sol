@@ -7,6 +7,7 @@ import "lib/IProxy.sol";
 import "lib/Controller.sol";
 import "lib/ControllerUtils.sol";
 
+
 contract ShareHolderController is Controller, ControllerUtils {
   string public constant name = "ShareHolderController";
   string public constant version = "1.0";

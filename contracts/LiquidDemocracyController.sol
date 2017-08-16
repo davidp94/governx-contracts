@@ -7,11 +7,11 @@ contract LiquidDemocracyController is Controller {
     string public constant name = "LiquidDemocracyController";
     string public constant version = "1.0";
 
-  function LiquidDemocracyController(address _proxy,
+  function LiquidDemocracyController(
+    address _proxy,
     address _token,
     address _curator,
     uint256 _baseQuorum,
-    uint256 _quorum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
@@ -19,7 +19,6 @@ contract LiquidDemocracyController is Controller {
     token = IMiniMeToken(_token);
     curator = _curator;
     baseQuorum = _baseQuorum;
-    quorum = _quorum;
     debatePeriod = _debatePeriod;
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
@@ -29,13 +28,11 @@ contract LiquidDemocracyController is Controller {
 
   function changeRules(
     uint256 _baseQuorum,
-    uint256 _quorum,
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
     uint256 _executionPeriod) public onlyProxy {
     baseQuorum = _baseQuorum;
-    quorum = _quorum;
     debatePeriod = _debatePeriod;
     votingPeriod = _votingPeriod;
     gracePeriod = _gracePeriod;
@@ -84,7 +81,6 @@ contract LiquidDemocracyController is Controller {
 
   uint256 public majority;
   uint256 public baseQourum;
-  uint256 public quorum;
   uint256 public debatePeriod;
   uint256 public votingPeriod;
   uint256 public gracePeriod;
