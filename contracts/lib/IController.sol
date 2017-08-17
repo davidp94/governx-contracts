@@ -1,4 +1,5 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
+
 
 contract IController {
     function hasVoted(uint256 _proposalID, address _sender) public constant returns (bool);
@@ -15,7 +16,6 @@ contract IController {
     function numDataOf(uint256 _proposalID) public constant returns (uint256);
     function dataOf(uint256 _proposalID, uint256 _index) public constant returns (bytes32);
 
-    function numProposals() public constant returns (uint256 numProposals);
     function nonces(address _sender) public constant returns (uint256);
 
     function newProposal(string _metadata, bytes32[] _data) public payable returns (uint proposalID);

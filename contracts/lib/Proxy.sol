@@ -1,4 +1,4 @@
-pragma solidity 0.4.11;
+pragma solidity ^0.4.15;
 
 import "lib/Owned.sol";
 
@@ -10,9 +10,7 @@ contract Proxy is Owned {
     function () payable { Received(msg.sender, msg.value); }
 
     function forward(address destination, uint value, bytes data) onlyOwner {
-        if (!destination.call.value(value)(data)) {
-            throw;
-        }
+        require(destination.call.value(value)(data));
         Forwarded(destination, value, data);
     }
 }

@@ -1,4 +1,5 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
+
 
 contract IRules {
     function canPropose(address _sender, uint256 _proposalID) public constant returns (bool);

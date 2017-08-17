@@ -1,6 +1,7 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/IController.sol";
+
 
 contract ControllerUtils {
     function destinationOf(uint256 _proposalID, uint256 _c) constant returns (address) {

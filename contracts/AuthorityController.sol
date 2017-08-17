@@ -3,7 +3,16 @@ pragma solidity ^0.4.15;
 import "lib/Controller.sol";
 import "lib/MembershipRegistry.sol";
 
+
 contract AuthorityController is Controller, MembershipRegistry {
+  mapping(uint256 => bool) public voteSubmitted;
+  mapping(uint256 => uint256) public yesVotes;
+  mapping(uint256 => uint256) public totalVotes;
+
+  address public authority;
+  uint256 public required;
+  uint256 public minimumQuorum;
+
   string public constant name = "AuthorityController";
   string public constant version = "1.0";
 
@@ -20,7 +29,7 @@ contract AuthorityController is Controller, MembershipRegistry {
     setProxy(_proxy);
   }
 
-  function changeVariables(uint256 _required, uint256 _minimumQuorum) onlySelf {
+  function changeVariables(uint256 _required, uint256 _minimumQuorum) onlyProxy {
     required = _required;
     minimumQuorum = _minimumQuorum;
   }
@@ -62,14 +71,4 @@ contract AuthorityController is Controller, MembershipRegistry {
   function hasFailed(address _sender, uint256 _proposalID) public constant returns (bool) {
     return false;
   }
-
-  mapping(uint256 => bool) public voteSubmitted;
-  mapping(uint256 => uint256) public yesVotes;
-  mapping(uint256 => uint256) public totalVotes;
-
-  address public authority;
-  uint256 public required;
-  uint256 public minimumQuorum;
-  string public constant name = "AuthorityController";
-  string public constant version = "1.0";
 }

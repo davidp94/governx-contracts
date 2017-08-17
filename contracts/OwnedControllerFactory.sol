@@ -1,8 +1,9 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/Proxy.sol";
 import "lib/PrivateServiceRegistry.sol";
 import "OwnedController.sol";
+
 
 contract OwnedControllerFactory is PrivateServiceRegistry {
     function createProxy(address _owner) public returns (address) {
@@ -13,7 +14,7 @@ contract OwnedControllerFactory is PrivateServiceRegistry {
     }
 
     function createController(address _proxy, address _owner) public returns (address service) {
-      service = address(new OwnedController(proxy, _owner));
+      service = address(new OwnedController(_proxy, _owner));
       register(service);
     }
 }

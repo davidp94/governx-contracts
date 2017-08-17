@@ -4,7 +4,7 @@ generated service contracts, such as our WeiFund standard campaign and enhanced
 standard campaign contracts. It is usually only inherited by other contracts.
 */
 
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.15;
 
 
 /// @title Private Service Registry - used to register generated service contracts.

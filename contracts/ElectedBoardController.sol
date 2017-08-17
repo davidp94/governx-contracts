@@ -1,13 +1,13 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
-import "lib/MultiSigController.sol";
-import "lib/ControllerUtils.sol";
+import "MultiSigController.sol";
 
-contract ElectedBoardController is MultiSigController, ControllerUtils {
+
+contract ElectedBoardController is MultiSigController {
   string public constant name = "ElectedBoardController";
   string public constant version = "1.0";
 
-  modifier onlyElectorate { if (msg.sender == _electorate) _; }
+  modifier onlyElectorate { if (msg.sender == electorate) _; }
 
   function ElectedBoardController(address _proxy, address[] _members, uint256 _required, uint256 _dailyLimit, address _electorate) {
     for (uint256 m = 0; m < _members.length; m++) {
@@ -21,19 +21,19 @@ contract ElectedBoardController is MultiSigController, ControllerUtils {
   }
 
   function changeVariables(uint256 _required, uint256 _dailyLimit) onlyElectorate {
-    parent.changeVariables(_required, _dailyLimit);
+    super.changeVariables(_required, _dailyLimit);
   }
 
   function changeElectorate(address _electorate) onlyElectorate {
     electorate = _electorate;
   }
 
-  function add(address _member) public onlyElectorate {
-    super.add(_member);
+  function addMember(address _member) public onlyElectorate {
+    super.addMember(_member);
   }
 
   function remove(address _member) public onlyElectorate {
-    super.remove(_member);
+    super.removeMember(_member);
   }
 
   address public electorate;

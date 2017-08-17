@@ -1,28 +1,29 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.15;
 
 import "lib/IToken.sol";
 
-contract Controller {
+
+contract MiniMeTokenController {
     function onTransfer(address _from, address _to, uint256 _value) public constant returns (bool);
     function onApprove(address _from, address _spender, uint256 _value) public constant returns (bool);
     function proxyPayment(address _sender) payable public returns (bool);
 }
 
 contract TokenFactory {
-    function createCloneToken(address,  uint256, string, uint8, string, bool) returns (address);
+    function createCloneToken(address, uint256, string, uint8, string, bool) returns (address);
 }
 
 contract MiniMeToken is IToken {
 
     modifier canApprove(address _spender, uint256 _value) {
       if (isContract(controller)) {
-        if (!controller.onApprove(msg.sender, _spender, _value)) throw;
+        require(controller.onApprove(msg.sender, _spender, _value));
       }
       if (_value != 0) _;
     }
 
     modifier onlyController() {
-      if (msg.sender != address(controller)) throw; else _;
+      require(msg.sender == address(controller)); _;
     }
 
     function MiniMeToken(
@@ -35,7 +36,7 @@ contract MiniMeToken is IToken {
         bool _transfersEnabled) {
       tokenFactory = TokenFactory(_tokenFactory);
       parent = MiniMeToken(_parent);
-      controller = Controller(msg.sender);
+      controller = MiniMeTokenController(msg.sender);
       snapShotBlock = _snapShotBlock;
       transfersEnabled = _transfersEnabled;
 
@@ -45,13 +46,11 @@ contract MiniMeToken is IToken {
     }
 
     function () payable {
-      if (isContract(controller)) {
-        if (!controller.proxyPayment.value(msg.value)(msg.sender)) { throw; }
-      } else throw;
+      require(isContract(controller) && controller.proxyPayment.value(msg.value)(msg.sender));
     }
 
     function changeController(address _newController) public onlyController {
-      controller = Controller(_newController);
+      controller = MiniMeTokenController(_newController);
     }
 
     function generateTokens(address _to, uint256 _value) public onlyController returns (bool success) {
@@ -86,9 +85,9 @@ contract MiniMeToken is IToken {
 
     function recordTransfer(address _from, address _to, uint256 _value, uint256 _fromBalance) internal {
       if (isContract(controller)) {
-        if (!controller.onTransfer(_from, _to, _value)) { throw; }
+        require(controller.onTransfer(_from, _to, _value));
       }
-      if (_to == address(this) || !transfersEnabled || _fromBalance < _value) throw;
+      require(_to != address(this) && transfersEnabled && _fromBalance >= _value);
 
       recordToTransfer(_from, 0, _value);
       recordToTransfer(_to, _value, 0);
@@ -115,7 +114,7 @@ contract MiniMeToken is IToken {
 
     function approveAndCall(address _spender, uint256 _value, bytes _extraData) payable public returns (bool success) {
       approve(_spender, _value);
-      if(!_spender.call.value(msg.value)(bytes4(sha3("receiveApproval(address,uint256,address,bytes)")), msg.sender, _value, this, _extraData)) { throw; }
+      require(_spender.call.value(msg.value)(bytes4(sha3("receiveApproval(address,uint256,address,bytes)")), msg.sender, _value, this, _extraData));
       return true;
     }
 
@@ -142,7 +141,7 @@ contract MiniMeToken is IToken {
     }
 
     function closest(uint256 _targetValue, uint256 _recordType, address _sender) internal constant returns (uint256) {
-      uint256[] targetArray = balanceAtRecords[_sender];
+      uint256[] storage targetArray = balanceAtRecords[_sender];
       if (targetArray.length == 0) { return 0; }
 
       uint256 current = targetArray[0];
@@ -209,7 +208,7 @@ contract MiniMeToken is IToken {
     bool transfersEnabled;
     uint256 public snapShotBlock;
     uint256 public initialAmount;
-    Controller public controller;
+    MiniMeTokenController public controller;
 
     mapping (address => mapping (address => uint256)) allowed;
     mapping (address => mapping(uint256 => mapping(uint256 => uint256))) balanceAtData;

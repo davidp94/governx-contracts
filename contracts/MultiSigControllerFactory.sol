@@ -1,8 +1,9 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/Proxy.sol";
 import "lib/PrivateServiceRegistry.sol";
 import "MultiSigController.sol";
+
 
 contract MultiSigControllerFactory is PrivateServiceRegistry {
     function createProxy(address[] _members, uint256 _required, uint256 _dailyLimit) public returns (address) {

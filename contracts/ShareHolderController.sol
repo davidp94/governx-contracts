@@ -1,9 +1,10 @@
 // to be used with ElectedBoardController
 // liquid democracy multi-class shareholder board with elections for board members
 
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/IProxy.sol";
+import "lib/IMiniMeToken.sol";
 import "lib/Controller.sol";
 import "lib/ControllerUtils.sol";
 
@@ -11,6 +12,26 @@ import "lib/ControllerUtils.sol";
 contract ShareHolderController is Controller, ControllerUtils {
   string public constant name = "ShareHolderController";
   string public constant version = "1.0";
+
+  uint256 public majority;
+  uint256 public baseQuorum;
+  uint256 public debatePeriod;
+  uint256 public votingPeriod;
+  uint256 public gracePeriod;
+  uint256 public executionPeriod;
+
+  uint256 public electionDate = block.timestamp + (24 weeks);
+  uint256 public electionDuration = 2 weeks;
+  uint256 public electionOffset = 24 weeks;
+  uint256 public electionBaseQuorum = 2;
+
+  mapping(address => mapping(uint256 => bool)) public delegated;
+  mapping(address => mapping(uint256 => uint256)) public delegationWeight;
+  mapping(uint256 => bool) public notAllowed;
+
+  address public electedBoard;
+  uint256[] public ratios;
+  address[] public tokens;
 
   function ShareHolderController(
     address _proxy,
@@ -68,7 +89,7 @@ contract ShareHolderController is Controller, ControllerUtils {
 
   function shareHolderBalanceOfAtTime(address _sender, uint256 _time) public constant returns (uint256 balance) {
     for (uint256 i = 0; i < tokens.length; i++)
-      balance += IMiniMeToken(tokens[i]).balanceOf(_sender, _time) / ratios[i];
+      balance += IMiniMeToken(tokens[i]).balanceOfAtTime(_sender, _time) / ratios[i];
   }
 
   function totalTokenSupply() public constant returns (uint256 totalSupply) {
@@ -95,7 +116,7 @@ contract ShareHolderController is Controller, ControllerUtils {
   function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
     return hasWon(_sender, _proposalID)
       && (block.timestamp < (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod + executionPeriod))
-      && (block.timestamp > (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod)));
+      && (block.timestamp > (momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod + gracePeriod));
   }
 
   function voteTime(uint256 _proposalID) public constant returns (uint256) {
@@ -106,7 +127,7 @@ contract ShareHolderController is Controller, ControllerUtils {
     uint256 balanceAtVoteTime = shareHolderBalanceOfAtTime(_sender, voteTime(_proposalID));
 
     if(balanceAtVoteTime > 0 && !hasVoted(_proposalID, _sender) && !delegated[_sender][_proposalID])
-      return balanceAtVoteTime + delegationWeight[_sender, _proposalID];
+      return balanceAtVoteTime + delegationWeight[_sender][_proposalID];
   }
 
   function hasWon(address _sender, uint256 _proposalID) public constant returns (bool)  {
@@ -115,12 +136,12 @@ contract ShareHolderController is Controller, ControllerUtils {
     bool onlyElectedBoard = true;
     bool usesElectedBoard = false;
 
-    bytes4 electSig = bytes4(sha3("add(address)"));
-    bytes4 unelectSig = bytes4(sha3("remove(address)"));
+    bytes4 electSig = bytes4(sha3("addMember(address)"));
+    bytes4 unelectSig = bytes4(sha3("removeMember(address)"));
 
-    for(uint256 c = executionOffset(msg.sender, i);
-          c < numDataOf(i);
-          c += dataLengthOf(i, c) + 3) {
+    for(uint256 c = executionOffset(msg.sender, _proposalID);
+          c < numDataOf(_proposalID);
+          c += dataLengthOf(_proposalID, c) + 3) {
       bytes4 dataSig = signatureOf(_proposalID, c);
       address dest = destinationOf(_proposalID, c);
 
@@ -138,7 +159,7 @@ contract ShareHolderController is Controller, ControllerUtils {
 
   // delegation happens once and during the vote period
   function delegate(address _to, uint256 _proposalID) public {
-    if (hasVoted(_proposalID, msg.sender) && !delegated[msg.sender][_proposalID]) throw;
+    require(!hasVoted(_proposalID, msg.sender) && !delegated[msg.sender][_proposalID]);
     delegated[msg.sender][_proposalID] = true;
     delegationWeight[_to][_proposalID] += shareHolderBalanceOfAtTime(msg.sender, voteTime(_proposalID)) + delegationWeight[msg.sender][_proposalID];
   }
@@ -157,24 +178,4 @@ contract ShareHolderController is Controller, ControllerUtils {
 
     return (creationTime >= electionDate && creationTime <= electionDate + electionDuration);
   }
-
-  uint256 public majority;
-  uint256 public baseQuorum;
-  uint256 public debatePeriod;
-  uint256 public votingPeriod;
-  uint256 public gracePeriod;
-  uint256 public executionPeriod;
-
-  uint256 public electionDate = block.timestamp + (6 months);
-  uint256 public electionDuration = 2 weeks;
-  uint256 public electionOffset = 6 months;
-  uint256 public electionBaseQuorum = 2;
-
-  mapping(address => mapping(uint256 => bool)) public delegated;
-  mapping(address => mapping(uint256 => uint256)) public delegationWeight;
-  mapping(uint256 => bool) public notAllowed;
-
-  address public electedBoard;
-  uint256[] public ratios;
-  address[] public tokens;
 }

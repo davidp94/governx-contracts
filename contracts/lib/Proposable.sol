@@ -40,7 +40,7 @@ contract Proposable {
     function numMomentsOf(uint256 _pid) public constant returns (uint256) { return proposals[_pid].moments.length; }
     function momentSenderOf(uint256 _pid, uint256 _mid) public constant returns (address) { return proposals[_pid].moments[_mid].sender; }
     function momentValueOf(uint256 _pid, uint256 _mid) public constant returns (uint256) { return proposals[_pid].moments[_mid].value; }
-    function momenTimeOf(uint256 _pid, uint256 _mid) public constant returns (uint256) { return proposals[_pid].moments[_mid].time; }
+    function momentTimeOf(uint256 _pid, uint256 _mid) public constant returns (uint256) { return proposals[_pid].moments[_mid].time; }
     function momentBlockOf(uint256 _pid, uint256 _mid) public constant returns (uint256) { return proposals[_pid].moments[_mid].block; }
     function momentNonceOf(uint256 _pid, uint256 _mid) public constant returns (uint256) { return proposals[_pid].moments[_mid].nonce; }
     function weightOf(uint256 _proposalID, uint256 _position) public constant returns (uint256) {
@@ -55,7 +55,7 @@ contract Proposable {
     }
 
     event ProposalMoment(address _sender, uint256 _momentID, uint256 _proposalID);
-    
+
     uint256 public numProposals;
     mapping(address => uint256) public nonces;
     mapping(uint256 => Proposal) public proposals;

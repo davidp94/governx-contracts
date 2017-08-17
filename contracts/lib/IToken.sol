@@ -1,6 +1,7 @@
 // Abstract contract for the full ERC 20 Token standard
 // https://github.com/ethereum/EIPs/issues/20
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.15;
+
 
 contract IToken {
     /// @param _owner The address from which the balance will be retrieved

@@ -1,11 +1,48 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/Proxy.sol";
 import "lib/PrivateServiceRegistry.sol";
 import "lib/MiniMeToken.sol";
 import "LiquidDemocracyController.sol";
 
-contract LiquidDemocracyController is PrivateServiceRegistry {
+
+contract IMinimeTokenFactory {
+  function createCloneToken(
+      address _parent,
+      uint256 _snapShotBlock,
+      string _tokenName,
+      uint8 _decimalUnits,
+      string _tokenSymbol,
+      bool _transfersEnabled) public returns (address service);
+}
+
+contract MinimeTokenFactory is IMinimeTokenFactory, PrivateServiceRegistry {
+  function createCloneToken(
+      address _parent,
+      uint256 _snapShotBlock,
+      string _tokenName,
+      uint8 _decimalUnits,
+      string _tokenSymbol,
+      bool _transfersEnabled) public returns (address service) {
+      service = address(new MiniMeToken(
+        address(this),
+        _parent,
+        _snapShotBlock,
+        _tokenName,
+        _decimalUnits,
+        _tokenSymbol,
+        _transfersEnabled));
+      register(service);
+    }
+}
+
+contract LiquidDemocracyControllerFactory is PrivateServiceRegistry {
+    IMinimeTokenFactory public factory;
+
+    function LiquidDemocracyControllerFactory(address _tokenFactory) {
+      factory = IMinimeTokenFactory(_tokenFactory);
+    }
+
     function createProxy(
       address _token,
       address _curator,
@@ -14,41 +51,38 @@ contract LiquidDemocracyController is PrivateServiceRegistry {
       uint256 _votingPeriod,
       uint256 _gracePeriod,
       uint256 _executionPeriod,
-      address _tokenFactory,
       address _parent,
       uint256 _snapShotBlock,
       string _tokenName,
       uint8 _decimalUnits,
       string _tokenSymbol,
       bool _transfersEnabled
-      ) public returns (address) {
-      Proxy proxy = new Proxy();
+      ) public returns (address proxy) {
+      proxy = address(new Proxy());
 
       // create token
-      address token = _token;
-      if (_token == address(0)) {
-        token = address(new MiniMeToken(
-            _tokenFactory,
+      if (_token == address(0))
+        _token = factory.createCloneToken(
             _parent,
             _snapShotBlock,
             _tokenName,
             _decimalUnits,
             _tokenSymbol,
-            _transfersEnabled));
-      }
+            _transfersEnabled);
 
-      // create controller
-      proxy.transfer(new LiquidDemocracyController(
+      address controller = address(new LiquidDemocracyController(
         proxy,
-        token,
+        _token,
         _curator,
         _baseQuorum,
         _debatePeriod,
         _votingPeriod,
         _gracePeriod,
         _executionPeriod));
+
+      // create controller
+      Proxy(proxy).transfer(controller);
       register(proxy);
-      return address(proxy);
     }
 
     function createController(
@@ -61,7 +95,7 @@ contract LiquidDemocracyController is PrivateServiceRegistry {
       uint256 _gracePeriod,
       uint256 _executionPeriod) public returns (address service) {
       service = address(new LiquidDemocracyController(
-        proxy,
+        _proxy,
         _token,
         _curator,
         _baseQuorum,

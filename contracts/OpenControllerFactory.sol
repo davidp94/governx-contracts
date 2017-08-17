@@ -1,8 +1,9 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/Proxy.sol";
 import "lib/PrivateServiceRegistry.sol";
 import "OpenController.sol";
+
 
 contract OpenControllerFactory is PrivateServiceRegistry {
     function createProxy() public returns (address) {

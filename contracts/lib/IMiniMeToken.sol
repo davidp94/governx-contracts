@@ -1,4 +1,5 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
+
 
 contract IMiniMeToken {
   /// @notice send `_value` token to `_to` from `msg.sender`
@@ -34,7 +35,7 @@ contract IMiniMeToken {
         string _cloneTokenSymbol,
         uint _snapshotBlock,
         bool _transfersEnabled) public returns(address);
-   
+
   /// @param _owner The address from which the balance will be retrieved
   /// @return The balance
   function balanceOf(address _owner) public constant returns (uint256 balance);
@@ -48,5 +49,5 @@ contract IMiniMeToken {
   function totalSupplyAtTime(uint256 _time) public constant returns (uint256);
 
   event Transfer(address indexed _from, address indexed _to, uint256 _value);
-  event Approval(address indexed _owner, address indexed _spender, uint256 _value);  
+  event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 }

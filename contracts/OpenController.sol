@@ -1,6 +1,7 @@
-pragma solidity 0.4.15;
+pragma solidity ^0.4.15;
 
 import "lib/Controller.sol";
+
 
 contract OpenController is Controller {
     string public constant name = "OpenController";

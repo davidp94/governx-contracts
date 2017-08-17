@@ -1,0 +1,36 @@
+{
+  "name": "governx-contracts",
+  "version": "1.0.0",
+  "description": "The core GovernX contracts.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "npm run test:contracts",
+    "test:contracts": "wafr ./contracts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/governx/governx-contracts.git"
+  },
+  "keywords": [
+    "governx",
+    "boardroom",
+    "ethereum",
+    "solidity",
+    "web3"
+  ],
+  "author": "Nick Dodson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/governx/governx-contracts/issues"
+  },
+  "homepage": "https://github.com/governx/governx-contracts#readme",
+  "devDependencies": {
+    "ethdeploy": "^1.0.7",
+    "ethdeploy-solc-loader": "^1.0.4",
+    "solc": "^0.4.15",
+    "wafr": "^0.3.8"
+  },
+  "dependencies": {
+    "wafr": "^0.3.7"
+  }
+}
