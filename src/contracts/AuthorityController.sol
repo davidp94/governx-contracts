@@ -16,7 +16,7 @@ contract AuthorityController is Controller, MembershipRegistry {
   string public constant name = "AuthorityController";
   string public constant version = "1.0";
 
-  modifier onlyAuthority() { if (msg.sender == authority) _; }
+  modifier onlyAuthority() { require(msg.sender == authority); _; }
 
   function AuthorityController(address _proxy, address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
     for (uint m = 0; m < _members.length; m++) {

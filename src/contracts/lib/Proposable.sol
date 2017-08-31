@@ -1,8 +1,10 @@
 pragma solidity 0.4.15;
 
+import "lib/IProposable.sol";
 
-contract Proposable {
-    modifier hasMoment (uint256 _proposalID) { recordMoment(_proposalID); _; }
+
+contract Proposable is IProposable {
+    modifier isMoment (uint256 _proposalID) { recordMoment(msg.sender, msg.value, _proposalID); _; }
 
     struct Moment {
         address sender;
@@ -18,19 +20,19 @@ contract Proposable {
         mapping(address => uint256) latest;
         mapping(uint256 => bytes32[]) votes;
         string metadata;
+        bytes data;
         Moment[] moments;
-        bytes32[] data;
     }
 
-    function recordMoment(uint256 _proposalID) internal {
-        proposals[_proposalID].latest[msg.sender] = proposals[_proposalID].moments.length;
-        ProposalMoment(msg.sender, proposals[_proposalID].latest[msg.sender], _proposalID);
+    function recordMoment(address _sender, uint256 _value, uint256 _proposalID) internal {
+        proposals[_proposalID].latest[_sender] = proposals[_proposalID].moments.length;
+        ProposalMoment(_sender, proposals[_proposalID].latest[_sender], _proposalID);
         proposals[_proposalID].moments.push(Moment({
-            sender: msg.sender,
-            value: msg.value,
+            sender: _sender,
+            value: _value,
             time: block.timestamp,
             block: block.number,
-            nonce: nonces[msg.sender]++
+            nonce: nonces[_sender]++
         }));
     }
 
@@ -50,11 +52,9 @@ contract Proposable {
     function hasExecuted(uint _proposalID) public constant returns (bool) { return proposals[_proposalID].executed; }
     function metadataOf(uint256 _proposalID) public constant returns (string) { return proposals[_proposalID].metadata; }
     function numDataOf(uint256 _proposalID) public constant returns (uint256) { return proposals[_proposalID].data.length; }
-    function dataOf(uint256 _proposalID, uint256 _index) public constant returns (bytes32) {
-        return proposals[_proposalID].data[_index];
+    function dataOf(uint256 _proposalID) public constant returns (bytes) {
+        return proposals[_proposalID].data;
     }
-
-    event ProposalMoment(address _sender, uint256 _momentID, uint256 _proposalID);
 
     uint256 public numProposals;
     mapping(address => uint256) public nonces;

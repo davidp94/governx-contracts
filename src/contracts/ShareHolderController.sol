@@ -5,11 +5,10 @@ pragma solidity ^0.4.15;
 
 import "lib/IProxy.sol";
 import "lib/IMiniMeToken.sol";
-import "lib/Controller.sol";
-import "lib/ControllerUtils.sol";
+import "lib/ControllerExtended.sol";
 
 
-contract ShareHolderController is Controller, ControllerUtils {
+contract ShareHolderController is ControllerExtended {
   string public constant name = "ShareHolderController";
   string public constant version = "1.0";
 
@@ -139,9 +138,9 @@ contract ShareHolderController is Controller, ControllerUtils {
     bytes4 electSig = bytes4(sha3("addMember(address)"));
     bytes4 unelectSig = bytes4(sha3("removeMember(address)"));
 
-    for(uint256 c = executionOffset(msg.sender, _proposalID);
+    for(uint256 c;
           c < numDataOf(_proposalID);
-          c += dataLengthOf(_proposalID, c) + 3) {
+          c += dataLengthOf(_proposalID, c) + (20 + 32 + 32)) {
       bytes4 dataSig = signatureOf(_proposalID, c);
       address dest = destinationOf(_proposalID, c);
 

@@ -9,18 +9,26 @@ contract MembershipRegistry is ProxyBased {
     mapping(uint256 => address) public members;
     mapping(address => uint256) public ids;
 
-    function addMember(address _member) public onlyProxy {
+    function _addMember(address _member) internal {
         require(!isMember(_member));
         ids[_member] = numMembers++;
         members[ids[_member]] = _member;
         numActiveMembers++;
     }
 
-    function removeMember(address _member) public onlyProxy {
+    function _removeMember(address _member) internal {
         require(isMember(_member));
         members[ids[_member]] = address(0);
         ids[_member] = 0;
         numActiveMembers--;
+    }
+
+    function addMember(address _member) public onlyProxy {
+        _addMember(_member);
+    }
+
+    function removeMember(address _member) public onlyProxy {
+        _removeMember(_member);
     }
 
     function transferAddress(address _addr) public {

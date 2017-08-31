@@ -3,13 +3,13 @@ pragma solidity ^0.4.15;
 import "lib/IToken.sol";
 
 
-contract MiniMeTokenController {
+contract IMiniMeTokenController {
     function onTransfer(address _from, address _to, uint256 _value) public constant returns (bool);
     function onApprove(address _from, address _spender, uint256 _value) public constant returns (bool);
     function proxyPayment(address _sender) payable public returns (bool);
 }
 
-contract TokenFactory {
+contract ITokenFactory {
     function createCloneToken(address, uint256, string, uint8, string, bool) returns (address);
 }
 
@@ -34,9 +34,9 @@ contract MiniMeToken is IToken {
         uint8 _decimalUnits,
         string _tokenSymbol,
         bool _transfersEnabled) {
-      tokenFactory = TokenFactory(_tokenFactory);
+      tokenFactory = ITokenFactory(_tokenFactory);
       parent = MiniMeToken(_parent);
-      controller = MiniMeTokenController(msg.sender);
+      controller = IMiniMeTokenController(msg.sender);
       snapShotBlock = _snapShotBlock;
       transfersEnabled = _transfersEnabled;
 
@@ -50,7 +50,7 @@ contract MiniMeToken is IToken {
     }
 
     function changeController(address _newController) public onlyController {
-      controller = MiniMeTokenController(_newController);
+      controller = IMiniMeTokenController(_newController);
     }
 
     function generateTokens(address _to, uint256 _value) public onlyController returns (bool success) {
@@ -188,7 +188,7 @@ contract MiniMeToken is IToken {
     }
 
     function isContract(address _addr) constant internal returns(bool ret) {
-        if (_addr == 0) return false;
+        if (_addr == address(0)) return false;
         assembly { ret := gt(extcodesize(_addr), 0) }
     }
 
@@ -203,12 +203,12 @@ contract MiniMeToken is IToken {
     string public symbol;                 // An identifier: eg SBX
     string public version = 'H0.1';       // human 0.1 standard. Just an arbitrary versioning scheme
 
-    TokenFactory public tokenFactory;
+    ITokenFactory public tokenFactory;
     MiniMeToken public parent;
     bool transfersEnabled;
     uint256 public snapShotBlock;
     uint256 public initialAmount;
-    MiniMeTokenController public controller;
+    IMiniMeTokenController public controller;
 
     mapping (address => mapping (address => uint256)) allowed;
     mapping (address => mapping(uint256 => mapping(uint256 => uint256))) balanceAtData;

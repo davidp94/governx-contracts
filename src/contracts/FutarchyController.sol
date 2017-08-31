@@ -40,21 +40,38 @@ contract FutarchyController is Controller, MembershipRegistry {
         addMember(_members[m]);
     }
 
-    function newProposal(string _metadata, bytes32[] _data) public payable hasMoment(numProposals) shouldPropose returns (uint proposalID) {
+    function newProposal(
+      string _metadata,
+      bytes _data,
+      Token collateralToken,
+      Oracle oracle,
+      uint8 outcomeCount,
+      int lowerBound,
+      int upperBound,
+      MarketFactory marketFactory,
+      MarketMaker marketMaker,
+      uint24 fee,
+      uint deadline)
+      public
+      payable
+      isMoment(numProposals)
+      shouldPropose
+      returns (uint proposalID) {
         proposalID = numProposals++;
         proposals[proposalID].metadata = _metadata;
         proposals[proposalID].data = _data;
+
+        // new code
         oracles[proposalID] = factory.createFutarchyOracle(
-          Token(address(_data[0])),
-          Oracle(address(_data[1])),
-          uint8(_data[2]),
-          int(_data[3]),
-          int(_data[4]),
-          MarketFactory(address(_data[5])),
-          MarketMaker(address(_data[6])),
-          uint24(_data[7]),
-          uint(_data[8])
-        );
+          collateralToken,
+          oracle,
+          outcomeCount,
+          lowerBound,
+          upperBound,
+          marketFactory,
+          marketMaker,
+          fee,
+          deadline);
     }
 
     function canPropose(address _sender, uint256 _proposalID) public constant returns (bool) {
@@ -65,7 +82,8 @@ contract FutarchyController is Controller, MembershipRegistry {
         return isMember(_sender) && oracles[_proposalID].getOutcome() == int(1);
     }
 
-    function executionOffset(address _sender, uint256 _proposalID) public constant returns (uint256) {
-        return 9;
+    function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
+      if (isMember(_sender))
+        return 1;
     }
 }

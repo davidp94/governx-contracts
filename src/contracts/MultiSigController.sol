@@ -1,14 +1,14 @@
 pragma solidity ^0.4.15;
 
-import "lib/Controller.sol";
+import "lib/ControllerExtended.sol";
 import "lib/MembershipRegistry.sol";
 import "lib/ControllerUtils.sol";
 
 
-contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
+contract MultiSigController is ControllerExtended, MembershipRegistry {
     uint256 public required;
     uint256 public dailyLimit;
-  
+
     string public constant name = "MultiSigController";
     string public constant version = "1.0";
 
@@ -46,14 +46,14 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
 
     // extra methods for UI
     function hasWon(address _sender, uint256 _proposalID) public constant returns (bool) {
-      for(uint256 c = executionOffset(msg.sender, _proposalID);
+      for(uint256 c;
           c < numDataOf(_proposalID);
-          c += dataLengthOf(_proposalID, c) + 4) {
+          c += dataLengthOf(_proposalID, c) + (20 + 32 + 32)) { // addr, uint, uint
         uint256 voteYes = weightOf(_proposalID, 1);
         uint256 value = valueOf(_proposalID, c);
         address destination = destinationOf(_proposalID, c);
         bool safeDestination = isSafeDestination(destination);
-        bool isNoBytecode = bool(signatureOf(_proposalID, c) == bytes4(0));
+        bool isNoBytecode = bool(lengthOf(_proposalID, c) == 0);
 
         return ((value + valueWithdrawnLast24Hours()) <= dailyLimit && safeDestination && isNoBytecode) || voteYes >= required;
       }
@@ -70,9 +70,9 @@ contract MultiSigController is Controller, ControllerUtils, MembershipRegistry {
       if (numProposals == 0) return 0;
 
       for (uint256 i = numProposals - 1; i > 0; i--) {
-        for(uint256 c = executionOffset(msg.sender, i);
+        for(uint256 c = 0;
             c < numDataOf(i);
-            c += dataLengthOf(i, c) + 4) {
+            c += dataLengthOf(i, c) + (20 + 32 + 32)) {
           uint256 executedAt = executionTimeOf(i);
 
           if (executedAt > oneDayAgo) {

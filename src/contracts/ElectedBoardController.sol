@@ -21,7 +21,8 @@ contract ElectedBoardController is MultiSigController {
   }
 
   function changeVariables(uint256 _required, uint256 _dailyLimit) onlyElectorate {
-    super.changeVariables(_required, _dailyLimit);
+    required = _required;
+    dailyLimit = _dailyLimit;
   }
 
   function changeElectorate(address _electorate) onlyElectorate {
@@ -29,11 +30,11 @@ contract ElectedBoardController is MultiSigController {
   }
 
   function addMember(address _member) public onlyElectorate {
-    super.addMember(_member);
+    _addMember(_member);
   }
 
-  function remove(address _member) public onlyElectorate {
-    super.removeMember(_member);
+  function removeMember(address _member) public onlyElectorate {
+    _removeMember(_member);
   }
 
   address public electorate;
