@@ -1,11 +1,11 @@
 // to be used with ElectedBoardController
 // liquid democracy multi-class shareholder board with elections for board members
 
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.16;
 
-import "lib/IProxy.sol";
-import "lib/IMiniMeToken.sol";
-import "lib/ControllerExtended.sol";
+import "utils/IProxy.sol";
+import "utils/IMiniMeToken.sol";
+import "utils/ControllerExtended.sol";
 
 
 contract ShareHolderController is ControllerExtended {
@@ -140,7 +140,7 @@ contract ShareHolderController is ControllerExtended {
 
     for(uint256 c;
           c < numDataOf(_proposalID);
-          c += dataLengthOf(_proposalID, c) + (20 + 32 + 32)) {
+          c += lengthOf(_proposalID, c) + (20 + 32 + 32)) {
       bytes4 dataSig = signatureOf(_proposalID, c);
       address dest = destinationOf(_proposalID, c);
 

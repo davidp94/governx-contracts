@@ -1,7 +1,7 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.16;
 
-import "lib/Controller.sol";
-import "lib/MembershipRegistry.sol";
+import "utils/Controller.sol";
+import "utils/MembershipRegistry.sol";
 
 
 contract AuthorityController is Controller, MembershipRegistry {
@@ -19,9 +19,8 @@ contract AuthorityController is Controller, MembershipRegistry {
   modifier onlyAuthority() { require(msg.sender == authority); _; }
 
   function AuthorityController(address _proxy, address[] _members, uint256 _minimumQuorum, uint256 _required, address _authority) {
-    for (uint m = 0; m < _members.length; m++) {
+    for (uint m = 0; m < _members.length; m++)
       addMember(_members[m]);
-    }
 
     authority = _authority;
     required = _required;
@@ -53,11 +52,10 @@ contract AuthorityController is Controller, MembershipRegistry {
 
   // only authority can submit the votes
   function submitTally(uint256 _proposalID, uint256 _yesVotes, uint256 _totalVotes) public onlyAuthority {
-    if (yesVotes[_proposalID] == 0 && _yesVotes != 0 && voteSubmitted[_proposalID] == false) {
-      voteSubmitted[_proposalID] = true;
-      yesVotes[_proposalID] = _yesVotes;
-      totalVotes[_proposalID] = _totalVotes;
-    }
+    require(yesVotes[_proposalID] == 0 && _yesVotes != 0 && voteSubmitted[_proposalID] == false);
+    voteSubmitted[_proposalID] = true;
+    yesVotes[_proposalID] = _yesVotes;
+    totalVotes[_proposalID] = _totalVotes;
   }
 
   // extra methods for UI

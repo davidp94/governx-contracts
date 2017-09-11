@@ -1,8 +1,8 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.16;
 
-import "lib/Proxy.sol";
-import "lib/PrivateServiceRegistry.sol";
-import "lib/MiniMeToken.sol";
+import "utils/Proxy.sol";
+import "utils/PrivateServiceRegistry.sol";
+import "utils/MiniMeToken.sol";
 import "LiquidDemocracyController.sol";
 
 

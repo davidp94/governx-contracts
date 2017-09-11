@@ -1,7 +1,7 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.16;
 
-import "lib/Controller.sol";
-import "lib/MembershipRegistry.sol";
+import "utils/Controller.sol";
+import "utils/MembershipRegistry.sol";
 
 
 contract FutarchyOracle {

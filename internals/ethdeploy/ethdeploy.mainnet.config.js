@@ -4,8 +4,8 @@ const sign = require('ethjs-signer').sign; // eslint-disable-line
 const accounts = require('../accounts');
 
 module.exports = ethdeployBase({
-  name: 'rinkeby',
-  provider: new SignerProvider('https://rinkeby.infura.io', {
+  name: 'mainnet',
+  provider: new SignerProvider('https://mainnet.infura.io', {
     signTransaction: (rawTx, cb) => {
       cb(null, sign(rawTx, accounts[0].secretKey));
     },

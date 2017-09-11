@@ -1,8 +1,7 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.16;
 
-import "lib/ControllerExtended.sol";
-import "lib/MembershipRegistry.sol";
-import "lib/ControllerUtils.sol";
+import "utils/ControllerExtended.sol";
+import "utils/MembershipRegistry.sol";
 
 
 contract MultiSigController is ControllerExtended, MembershipRegistry {
@@ -13,9 +12,8 @@ contract MultiSigController is ControllerExtended, MembershipRegistry {
     string public constant version = "1.0";
 
     function MultiSigController(address _proxy, address[] _members, uint256 _required, uint256 _dailyLimit) {
-      for (uint256 m = 0; m < _members.length; m++) {
+      for (uint256 m = 0; m < _members.length; m++)
         addMember(_members[m]);
-      }
 
       required = _required;
       dailyLimit = _dailyLimit;
@@ -48,7 +46,7 @@ contract MultiSigController is ControllerExtended, MembershipRegistry {
     function hasWon(address _sender, uint256 _proposalID) public constant returns (bool) {
       for(uint256 c;
           c < numDataOf(_proposalID);
-          c += dataLengthOf(_proposalID, c) + (20 + 32 + 32)) { // addr, uint, uint
+          c += lengthOf(_proposalID, c) + (20 + 32 + 32)) { // addr, uint, uint
         uint256 voteYes = weightOf(_proposalID, 1);
         uint256 value = valueOf(_proposalID, c);
         address destination = destinationOf(_proposalID, c);
@@ -72,7 +70,7 @@ contract MultiSigController is ControllerExtended, MembershipRegistry {
       for (uint256 i = numProposals - 1; i > 0; i--) {
         for(uint256 c = 0;
             c < numDataOf(i);
-            c += dataLengthOf(i, c) + (20 + 32 + 32)) {
+            c += lengthOf(i, c) + (20 + 32 + 32)) {
           uint256 executedAt = executionTimeOf(i);
 
           if (executedAt > oneDayAgo) {

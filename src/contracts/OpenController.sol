@@ -1,6 +1,6 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.16;
 
-import "lib/Controller.sol";
+import "utils/Controller.sol";
 
 
 contract OpenController is Controller {
