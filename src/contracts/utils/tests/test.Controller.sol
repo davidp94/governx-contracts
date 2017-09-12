@@ -41,6 +41,6 @@ contract ControllerTest is Test {
   }
 
   function test_2_ensureProposalExecution_increaseBlocksBy100() {
-    
+
   }
 }

@@ -10,11 +10,10 @@ contract IMiniMeTokenController {
 }
 
 contract ITokenFactory {
-    function createCloneToken(address, uint256, string, uint8, string, bool) returns (address);
+    function createCloneToken(address, uint256, string, uint8, string, bool) public returns (address);
 }
 
 contract MiniMeToken is IToken {
-
     modifier canApprove(address _spender, uint256 _value) {
       if (isContract(controller)) {
         require(controller.onApprove(msg.sender, _spender, _value));
@@ -33,7 +32,7 @@ contract MiniMeToken is IToken {
         string _tokenName,
         uint8 _decimalUnits,
         string _tokenSymbol,
-        bool _transfersEnabled) {
+        bool _transfersEnabled) public {
       tokenFactory = ITokenFactory(_tokenFactory);
       parent = MiniMeToken(_parent);
       controller = IMiniMeTokenController(msg.sender);
@@ -45,7 +44,7 @@ contract MiniMeToken is IToken {
       symbol = _tokenSymbol;                               // Set the symbol for display purposes
     }
 
-    function () payable {
+    function () public payable {
       require(isContract(controller) && controller.proxyPayment.value(msg.value)(msg.sender));
     }
 
@@ -54,8 +53,8 @@ contract MiniMeToken is IToken {
     }
 
     function generateTokens(address _to, uint256 _value) public onlyController returns (bool success) {
-      recordToTransfer(address(this), balanceOf(address(this)) + _value, 0);
-      recordToTransfer(_to, balanceOf(_to) + _value, 0);
+      recordToTransfer(address(this), _value, 0);
+      recordToTransfer(_to, _value, 0);
       return true;
     }
 
@@ -112,7 +111,7 @@ contract MiniMeToken is IToken {
       return true;
     }
 
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData) payable public returns (bool success) {
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public payable returns (bool success) {
       approve(_spender, _value);
       require(_spender.call.value(msg.value)(bytes4(sha3("receiveApproval(address,uint256,address,bytes)")), msg.sender, _value, this, _extraData));
       return true;
@@ -123,7 +122,7 @@ contract MiniMeToken is IToken {
         uint8 _cloneDecimalUnits,
         string _cloneTokenSymbol,
         uint _snapshotBlock,
-        bool _transfersEnabled) returns(address) {
+        bool _transfersEnabled) public returns(address) {
         if (_snapshotBlock == 0) _snapshotBlock = block.number;
         address cloneToken = tokenFactory.createCloneToken(
             this,
@@ -192,7 +191,7 @@ contract MiniMeToken is IToken {
         assembly { ret := gt(extcodesize(_addr), 0) }
     }
 
-    function enableTransfers(bool _transfersEnabled) onlyController {
+    function enableTransfers(bool _transfersEnabled) public onlyController {
         transfersEnabled = _transfersEnabled;
     }
 
@@ -205,10 +204,11 @@ contract MiniMeToken is IToken {
 
     ITokenFactory public tokenFactory;
     MiniMeToken public parent;
+    IMiniMeTokenController public controller;
+
     bool transfersEnabled;
     uint256 public snapShotBlock;
     uint256 public initialAmount;
-    IMiniMeTokenController public controller;
 
     mapping (address => mapping (address => uint256)) allowed;
     mapping (address => mapping(uint256 => mapping(uint256 => uint256))) balanceAtData;

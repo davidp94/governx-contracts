@@ -76,7 +76,7 @@ contract LiquidDemocracyController is Controller {
     return momentTimeOf(_proposalID, 0) + debatePeriod + votingPeriod;
   }
 
-  function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
+  function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, bytes32 _data) public constant returns (uint256)  {
     uint256 balanceAtVoteTime = token.balanceOfAtTime(_sender, voteTime(_proposalID));
 
     if(balanceAtVoteTime > 0 && !hasVoted(_proposalID, _sender) && !delegated[_sender][_proposalID])

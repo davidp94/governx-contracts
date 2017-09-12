@@ -14,6 +14,9 @@ contract OpenControllerFactoryTest is Test {
   }
 
   function test_0_createOpenController_test_methods() {
-    // Proxy proxy = Proxy(factory.createProxy());
+    Proxy proxy = Proxy(factory.createProxy());
+    OpenController controller = OpenController(proxy.owner());
+
+    assertEq(controller.numProposals(), uint256(0));
   }
 }

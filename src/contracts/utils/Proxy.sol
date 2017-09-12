@@ -13,7 +13,7 @@ contract Proxy is IProxy, Owned {
     }
 
     function transfer(address _owner) public {
-      require(msg.sender == address(this));
+      require(msg.sender == address(this) || msg.sender == owner);
       owner = _owner;
     }
 }
