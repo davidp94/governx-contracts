@@ -10,6 +10,7 @@ contract OpenControllerFactory is PrivateServiceRegistry {
       Proxy proxy = new Proxy();
       OpenController controller = new OpenController(proxy);
       proxy.transfer(address(controller));
+      register(proxy);
       return address(proxy);
     }
 

@@ -6,6 +6,6 @@ module.exports = ethdeployBase({
   provider: new HTTPProvider('http://localhost:8545'),
   defaultTxObject: {
     from: 0,
-    gas: 4000000,
+    gas: 3000000,
   },
 });

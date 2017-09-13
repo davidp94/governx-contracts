@@ -7,7 +7,7 @@ contract OpenController is Controller {
     string public constant name = "OpenController";
     string public constant version = "1.0";
 
-    function OpenController(address _proxy) {
+    function OpenController(address _proxy) public {
       setProxy(_proxy);
     }
 

@@ -42,6 +42,7 @@ module.exports = environment => (options) => ({ // eslint-disable-line
       'IOwned',
       'IPrivateServiceRegistry',
       'IToken',
+      'Proxy',
     ]),
     new options.plugins.JSONFilter(),
     new options.plugins.JSONExpander(),

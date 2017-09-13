@@ -7,11 +7,11 @@ contract Owned is IOwned {
     address public owner;
     modifier onlyOwner() { require(isOwner(msg.sender)); _; }
 
-    function Owned() { owner = msg.sender; }
+    function Owned() public { owner = msg.sender; }
 
     function isOwner(address addr) public constant returns(bool) { return addr == owner; }
 
-    function transfer(address _owner) onlyOwner {
+    function transfer(address _owner) public onlyOwner {
       owner = _owner;
     }
 }

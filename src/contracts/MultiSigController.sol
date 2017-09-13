@@ -11,7 +11,7 @@ contract MultiSigController is ControllerExtended, MembershipRegistry {
     string public constant name = "MultiSigController";
     string public constant version = "1.0";
 
-    function MultiSigController(address _proxy, address[] _members, uint256 _required, uint256 _dailyLimit) {
+    function MultiSigController(address _proxy, address[] _members, uint256 _required, uint256 _dailyLimit) public {
       for (uint256 m = 0; m < _members.length; m++)
         addMember(_members[m]);
 

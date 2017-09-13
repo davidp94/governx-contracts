@@ -42,7 +42,7 @@ contract ShareHolderController is ControllerExtended {
     uint256 _debatePeriod,
     uint256 _votingPeriod,
     uint256 _gracePeriod,
-    uint256 _executionPeriod) {
+    uint256 _executionPeriod) public {
     tokens = _tokens;
     ratios = _ratios;
     electedBoard = _electedBoard;

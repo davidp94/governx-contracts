@@ -8,7 +8,7 @@ contract OwnedController is Owned, Controller {
     string public constant name = "OwnedController";
     string public constant version = "1.0";
 
-    function OwnedController(address _proxy, address _owner) {
+    function OwnedController(address _proxy, address _owner) public {
       setProxy(_proxy);
       owner = _owner;
     }

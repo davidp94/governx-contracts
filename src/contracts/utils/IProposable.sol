@@ -1,6 +1,7 @@
 pragma solidity ^0.4.16;
 
 
+// the interface for proposable systems
 contract IProposable {
     function hasVoted(uint256 _proposalID, address _sender) public constant returns (bool);
     function numMomentsOf(uint256 _proposalID) public constant returns (uint256);
