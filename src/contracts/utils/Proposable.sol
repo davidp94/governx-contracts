@@ -14,11 +14,16 @@ contract Proposable is IProposable {
         uint256 block;
     }
 
+    struct Vote {
+      uint256 position;
+      uint256 weight;
+    }
+
     struct Proposal {
         bool executed;
         mapping(uint256 => uint256) weights;
         mapping(address => uint256) latest;
-        mapping(uint256 => bytes32[]) votes;
+        mapping(uint256 => Vote) votes;
         string metadata;
         bytes data;
         Moment[] moments;
@@ -39,6 +44,7 @@ contract Proposable is IProposable {
     function hasVoted(uint256 _pid, address _sender) public constant returns (bool) {
         return (proposals[_pid].latest[_sender] > 0);
     }
+    function latestMomentOf(uint256 _pid, address _sender) public constant returns (uint256) { return proposals[_pid].latest[_sender]; }
     function numMomentsOf(uint256 _pid) public constant returns (uint256) { return proposals[_pid].moments.length; }
     function momentSenderOf(uint256 _pid, uint256 _mid) public constant returns (address) { return proposals[_pid].moments[_mid].sender; }
     function momentValueOf(uint256 _pid, uint256 _mid) public constant returns (uint256) { return proposals[_pid].moments[_mid].value; }
@@ -48,7 +54,12 @@ contract Proposable is IProposable {
     function weightOf(uint256 _proposalID, uint256 _position) public constant returns (uint256) {
         return proposals[_proposalID].weights[_position];
     }
-    function voteOf(uint256 _pid, uint256 _mid, uint256 _index) public constant returns (bytes32) { return proposals[_pid].votes[_mid][_index]; }
+    function voteWeightOf(uint256 _pid, uint256 _mid) public constant returns (uint256) {
+      return proposals[_pid].votes[_mid].weight;
+    }
+    function votePositionOf(uint256 _pid, uint256 _mid) public constant returns (uint256) {
+      return proposals[_pid].votes[_mid].position;
+    }
     function hasExecuted(uint _proposalID) public constant returns (bool) { return proposals[_proposalID].executed; }
     function metadataOf(uint256 _proposalID) public constant returns (string) { return proposals[_proposalID].metadata; }
     function numDataOf(uint256 _proposalID) public constant returns (uint256) { return proposals[_proposalID].data.length; }

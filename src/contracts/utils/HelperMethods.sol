@@ -4,7 +4,7 @@ library HelperMethods {
     function proposalData(string _functionSig, address _destination, uint _value, bytes _calldata) internal constant returns (bytes) {
         bytes4 functionID;
         if(bytes(_functionSig).length == 0) {
-            functionID = 0;
+            functionID = bytes4(0);
         } else {
             functionID = bytes4(sha3(_functionSig));
         }
@@ -33,8 +33,6 @@ library HelperMethods {
             }
 
             let cdlength := mload(_calldata)
-            //mstore(mc, cdlength)
-            //mc := add(mc, 0x20)
             _calldata := add(_calldata, 0x20)
 
             cdlength := add(mc, cdlength)
@@ -47,7 +45,8 @@ library HelperMethods {
             }
 
             // set the length
-            mstore(data, sub(mc, data))
+            mstore(data, sub(mc, add(data, 0x20)))
+            mstore(add(data, 0x20), sub(mc, data))
 
             // set the free-memory pointer to the right address
             mstore(0x40, mc)
@@ -65,5 +64,24 @@ library HelperMethods {
 
             return(sub(_bytes32Array, 0x20), add(length, 0x40))
         }
+    }
+
+    function concatBytes(bytes _preBytes, bytes _postBytes) internal constant returns (bytes) {
+        assembly {
+            let mc := mload(_preBytes)
+            let postlength := mload(_postBytes)
+            mstore(_preBytes, add(postlength, mc))
+
+            mc := add(mc, _preBytes)
+
+            for {} lt(_postBytes, postlength) {
+                mc := add(mc, 0x20)
+                _postBytes := add(_postBytes, 0x20)
+            } {
+                mstore(mc, mload(_postBytes))
+            }
+        }
+
+        return _preBytes;
     }
 }

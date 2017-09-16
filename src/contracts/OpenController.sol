@@ -20,10 +20,15 @@ contract OpenController is Controller {
     }
 
     function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {
-        return true;
+        return hasWon(_sender, _proposalID);
     }
 
-    function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, bytes32 _data) public constant returns (uint256)  {
+    function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
         return 1;
+    }
+
+    // ui methods
+    function hasWon(address _sender, uint256 _proposalID) public constant returns (bool) {
+      return weightOf(_proposalID, 1) >= 1; // has one yes vote
     }
 }

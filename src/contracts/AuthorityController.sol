@@ -45,7 +45,7 @@ contract AuthorityController is Controller, MembershipRegistry {
       return isMember(_sender) && hasWon(_sender, _proposalID);
   }
 
-  function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, bytes32 _data) public constant returns (uint256)  {
+  function votingWeightOf(address _sender, uint256 _proposalID, uint256 _index, uint256 _data) public constant returns (uint256)  {
     if (isMember(_sender))
       return 1;
   }

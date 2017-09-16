@@ -28,7 +28,7 @@ contract ControllerTest is Test {
 
   function test_1_ensureVoteWorks_increaseBlocksBy100() {
     vote.push(1);
-    controller.vote(0, vote);
+    controller.vote(0, 1, 1);
 
     assertEq(controller.numProposals(), uint256(1));
     assertEq(controller.numMomentsOf(0), uint256(2));

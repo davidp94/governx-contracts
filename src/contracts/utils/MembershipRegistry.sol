@@ -1,6 +1,7 @@
 pragma solidity ^0.4.16;
 
 import "utils/ProxyBased.sol";
+import "utils/IMembershipRegistry.sol";
 
 
 contract MembershipRegistry is ProxyBased {

@@ -18,10 +18,9 @@ contract Controller is IController, ProxyBased, Proposable, DefaultRules {
         proposals[proposalID].data = _data;
     }
 
-    function vote(uint256 _proposalID, bytes32[] _data) public payable transferFunds isMoment(_proposalID) shouldVote(_proposalID) {
-        proposals[_proposalID].votes[proposals[_proposalID].moments.length] = _data;
-        for(uint256 i; i < _data.length; i++)
-            proposals[_proposalID].weights[i] += votingWeightOf(msg.sender, _proposalID, i, _data[i]);
+    function vote(uint256 _proposalID, uint256 _position, uint256 _weight) public payable transferFunds isMoment(_proposalID) shouldVote(_proposalID) {
+        proposals[_proposalID].votes[proposals[_proposalID].moments.length] = Vote({ position: _position, weight: _weight });
+        proposals[_proposalID].weights[_position] += votingWeightOf(msg.sender, _proposalID, _position, _weight);
     }
 
     function execute(uint256 _proposalID) public payable transferFunds isMoment(_proposalID) shouldExecute(_proposalID) {
