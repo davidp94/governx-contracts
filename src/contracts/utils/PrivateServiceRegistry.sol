@@ -15,7 +15,6 @@ import "utils/IPrivateServiceRegistry.sol";
 
 
 contract PrivateServiceRegistry is IPrivateServiceRegistry {
-
   modifier isRegisteredService(address _service) {
     // does the service exist in the registry, is the service address not empty
     if (services.length > 0) {

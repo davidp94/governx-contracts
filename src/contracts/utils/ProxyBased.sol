@@ -4,11 +4,11 @@ import "utils/IProxy.sol";
 
 
 contract ProxyBased {
-    modifier onlyProxy { if (msg.sender == address(proxy)) _; }
+  modifier onlyProxy { if (msg.sender == address(proxy)) _; }
 
-    function setProxy(address _proxy) internal {
-        proxy = IProxy(_proxy);
-    }
+  function setProxy(address _proxy) internal {
+    proxy = IProxy(_proxy);
+  }
 
-    IProxy public proxy;
+  IProxy public proxy;
 }
