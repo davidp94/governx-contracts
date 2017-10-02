@@ -16,7 +16,7 @@
     "build:stats": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack --config ./internals/webpack/webpack.config.js --progress --profile --json > dist/stats.json",
     "test": "npm run test:contracts",
     "test:contracts": "npm run test:contracts:solidity && npm run test:contracts:js",
-    "test:contracts:solidity": "wafr ./src/contracts --focus tests/test.OpenController.sol",
+    "test:contracts:solidity": "wafr ./src/contracts --focus tests/test.MultiSigController.sol",
     "test:contracts:js": "npm run deploy:testrpc && npm run test:contracts:js:mocha",
     "test:contracts:js:mocha": "mocha src/contracts/**/*test.**.js -R spec --timeout 2000000 --compilers js:babel-core/register --require ./internals/mocha/index",
     "lint": "npm run lint:js",

@@ -26,6 +26,8 @@ module.exports = environment => (options) => ({ // eslint-disable-line
     ],
     deployment: (deploy, contracts, done) => {
       deploy(contracts.OpenControllerFactory)
+      .then(() => deploy(contracts.MultiSigControllerFactory))
+      .then(() => deploy(contracts.AnythingToken, 100))
       .then(() => {
         done();
       });
@@ -41,11 +43,14 @@ module.exports = environment => (options) => ({ // eslint-disable-line
       'MiniMeToken',
       'IProxy',
       'IOwned',
+      'IMetadata',
       'IPrivateServiceRegistry',
       'IToken',
+      'IHumanStandardToken',
       'Proxy',
       'IMembershipRegistry',
       'HelperMethods',
+      'MultiSigControllerFactory',
     ]),
     new options.plugins.JSONFilter(),
     new options.plugins.JSONExpander(),

@@ -38,7 +38,7 @@ contract AuthorityController is Controller, MembershipRegistry {
   }
 
   function canVote(address _sender, uint256 _proposalID) public constant returns (bool)  {
-    return isMember(_sender);
+    return !hasVoted(_proposalID, _sender) && isMember(_sender);
   }
 
   function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {

@@ -109,7 +109,7 @@ contract ShareHolderController is ControllerExtended {
   }
 
   function canVote(address _sender, uint256 _proposalID) public constant returns (bool)  {
-    return (shareHolderBalanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID]);
+    return !hasVoted(_proposalID, _sender) && (shareHolderBalanceOfAtTime(_sender, voteTime(_proposalID)) > 0 && !delegated[_sender][_proposalID]);
   }
 
   function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {

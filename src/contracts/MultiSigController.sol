@@ -12,7 +12,7 @@ contract MultiSigController is Controller, MembershipRegistry {
 
   function MultiSigController(address _proxy, address[] _members, uint256 _required) public {
     for (uint256 m = 0; m < _members.length; m++)
-      addMember(_members[m]);
+      _addMember(_members[m]);
 
     required = _required;
     setProxy(_proxy);
@@ -27,7 +27,7 @@ contract MultiSigController is Controller, MembershipRegistry {
   }
 
   function canVote(address _sender, uint256 _proposalID) public constant returns (bool)  {
-    return isMember(_sender);
+    return isMember(_sender) && !hasVoted(_proposalID, _sender);
   }
 
   function canExecute(address _sender, uint256 _proposalID) public constant returns (bool)  {

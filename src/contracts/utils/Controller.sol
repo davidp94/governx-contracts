@@ -8,7 +8,7 @@ import "utils/IController.sol";
 
 contract Controller is IController, ProxyBased, Proposable, DefaultRules {
   modifier shouldPropose { _; require(canPropose(msg.sender, numProposals - 1)); }
-  modifier shouldVote (uint256 _proposalID) { _; require(canVote(msg.sender, _proposalID)); }
+  modifier shouldVote (uint256 _proposalID) { require(canVote(msg.sender, _proposalID)); _; }
   modifier shouldExecute (uint256 _proposalID) { require(canExecute(msg.sender, _proposalID)); _; }
   modifier transferFunds { if (msg.value > 0) { require(proxy.send(msg.value)); } _; }
 
@@ -27,7 +27,7 @@ contract Controller is IController, ProxyBased, Proposable, DefaultRules {
     require(!proposals[_proposalID].executed);
     proposals[_proposalID].executed = true;
 
-    address memoryProxy = proxy;
+    address memoryProxy = address(proxy);
     bytes memory data = proposals[_proposalID].data;
 
     assembly {
@@ -36,10 +36,28 @@ contract Controller is IController, ProxyBased, Proposable, DefaultRules {
       let mc := add(data, 0x20)
 
       for {}  lt(mc, end) {} {
+        // THIS CHANGED !!!!!!
+        //
+        // the structure of the contents of this
+        // tightly packed array of data are as follows:
+        //
+        // ==========================
+        // 32 bytes uint (calldata length)
+        // 20 bytes address (destination)
+        // 32 bytes uint (value)
+        // [optional dynamic data bytes] (calldata)
+        // ==========================
+        // 32 bytes uint (value)
+        // 20 bytes address (destination)
+        // 32 bytes uint (calldata length)
+        // [optional dynamic data bytes] (calldata)
+        // ==========================
+        // [...]
+
         let length := mload(mc)
         mc := add(mc, 0x20)
 
-        switch call(gas, mload(memoryProxy), 0, mc, length, 0, 0)
+        switch call(gas, memoryProxy, 0, mc, length, 0, 0)
         case 0 { stop }
         mc := add(mc, length)
       }

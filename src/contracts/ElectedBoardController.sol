@@ -9,20 +9,18 @@ contract ElectedBoardController is MultiSigController {
 
   modifier onlyElectorate { if (msg.sender == electorate) _; }
 
-  function ElectedBoardController(address _proxy, address[] _members, uint256 _required, uint256 _dailyLimit, address _electorate) public {
+  function ElectedBoardController(address _proxy, address[] _members, uint256 _required, address _electorate) public {
     for (uint256 m = 0; m < _members.length; m++) {
       addMember(_members[m]);
     }
 
     electorate = _electorate;
     required = _required;
-    dailyLimit = _dailyLimit;
     setProxy(_proxy);
   }
 
-  function changeVariables(uint256 _required, uint256 _dailyLimit) public onlyElectorate {
+  function changeVariables(uint256 _required) public onlyElectorate {
     required = _required;
-    dailyLimit = _dailyLimit;
   }
 
   function changeElectorate(address _electorate) public onlyElectorate {
